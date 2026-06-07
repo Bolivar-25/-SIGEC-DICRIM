@@ -19529,9 +19529,32 @@ latitud: Number(record.latitud || 0),
 longitud: Number(record.longitud || 0),
 punto_intervenido: record.pointReference || record.pointAddress || "",
 personas_detenidas: Number(record.peopleDetained || 0),
+    
 evidencia_ocupada: Array.isArray(record.evidenciasOcupadas)
-  ? record.evidenciasOcupadas.map(e => e.descripcion || e.description || e.tipo || "").filter(Boolean).join(", ")
+  ? record.evidenciasOcupadas
+      .map(e =>
+        e.descripcion ||
+        e.description ||
+        e.tipo ||
+        e.type ||
+        e.name ||
+        e.nombre ||
+        e.detalle ||
+        JSON.stringify(e)
+      )
+      .filter(Boolean)
+      .join(", ")
   : "",
+
+maquinas_tragamonedas: Number(
+  record.tragamonedas?.quantity ||
+  record.tragamonedas?.cantidad ||
+  record.tragamonedas?.amount ||
+  record.tragamonedas?.total ||
+  record.tragamonedas?.items?.length ||
+  0
+),
+    
 dinero_ocupado: Number(
   record.dineroEfectivo?.amount ||
   record.dineroEfectivo?.monto ||
@@ -19544,14 +19567,7 @@ moneda_dinero_ocupado:
   record.dineroEfectivo?.moneda ||
   "DOP",
 
-maquinas_tragamonedas: Number(
-  record.tragamonedas?.quantity ||
-  record.tragamonedas?.cantidad ||
-  record.tragamonedas?.amount ||
-  0
-),
-
- marihuana_detalle: "",
+    marihuana_detalle: "",
 cocaina_detalle: "",
 crack_detalle: "",
 molly_detalle: "",
@@ -19599,6 +19615,9 @@ fentanilo_detalle: "",
 
 payload.total_sustancias += cantidad;
 });
+
+console.log("EVIDENCIAS OCUPADAS:", record.evidenciasOcupadas);
+console.log("TRAGAMONEDAS:", record.tragamonedas);
    
   console.log("PAYLOAD NARCOTICOS A SUPABASE:", payload);
 
