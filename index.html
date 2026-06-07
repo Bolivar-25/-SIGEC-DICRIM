@@ -17186,8 +17186,9 @@ syncLaborSupabase(newLabor);
           updatedBy: currentUser().username
         };
         db.labors.push(labor);
-        logAction("Labor creada", labor.laborCode);
-        labores_procesarDenunciaDetectada(labor);
+syncLaborSupabase(labor);
+logAction("Labor creada", labor.laborCode);
+labores_procesarDenunciaDetectada(labor);
       }
       saveDb();
       limpiarDatosDespuesDeGuardar("labores");
