@@ -19513,6 +19513,8 @@ async function syncCaseSupabase(caso) {
   }
 }
  async function syncNarcoticosSupabase(record) {
+   console.log("RECORD COMPLETO:", record);
+console.log("SUBSTANCES:", record.substances);
   if (!window.supabaseClient || !record) return;
 
   const sustancias = Array.isArray(record.substances) ? record.substances : [];
@@ -19580,6 +19582,10 @@ fentanilo_unidad: "",
   payload.fentanilo += cantidad;
   payload.fentanilo_unidad = s.unit || "";
 }
+  if (!payload.unidad_general && s.unit) payload.unidad_general = s.unit;
+payload.total_sustancias += cantidad;
+});
+   
   console.log("PAYLOAD NARCOTICOS A SUPABASE:", payload);
 
     console.log("UNIDADES POR SUSTANCIA:", {
@@ -19593,11 +19599,11 @@ fentanilo_unidad: "",
   heroina_unidad: payload.heroina_unidad,
   fentanilo_unidad: payload.fentanilo_unidad
 });
-    
-  const { data, error } = await window.supabaseClient
-    .from("narcoticos")
-    .insert([payload])
-    .select();
+
+const { data, error } = await window.supabaseClient
+  .from("narcoticos")
+  .insert([payload])
+  .select();
 
   console.log("RESPUESTA SUPABASE NARCOTICOS:", { data, error });
 
