@@ -19529,6 +19529,7 @@ if (error) {
 
 async function syncOperativeSupabase(operative) {
   if (!window.supabaseClient || !operative) return;
+  console.log("OPERATIVO COMPLETO:", operative);
 
   const payload = {
     codigo_operativo: operative.operativeCode || operative.codigo_operativo || operative.id || "",
