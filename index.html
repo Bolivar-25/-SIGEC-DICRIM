@@ -19627,6 +19627,18 @@ payload.total_sustancias += cantidad;
   fentanilo_unidad: payload.fentanilo_unidad
 });
 
+   console.log("DETALLES POR SUSTANCIA:", {
+  marihuana_detalle: payload.marihuana_detalle,
+  cocaina_detalle: payload.cocaina_detalle,
+  crack_detalle: payload.crack_detalle,
+  molly_detalle: payload.molly_detalle,
+  tusy_detalle: payload.tusy_detalle,
+  extasis_detalle: payload.extasis_detalle,
+  metanfetamina_detalle: payload.metanfetamina_detalle,
+  heroina_detalle: payload.heroina_detalle,
+  fentanilo_detalle: payload.fentanilo_detalle
+});
+
 const { data, error } = await window.supabaseClient
   .from("narcoticos")
   .insert([payload])
