@@ -10665,7 +10665,7 @@
     function saveCaseRecord(data) {
       const user = currentUser();
       const editingId = el("editingId").value;
-      if (!periodo_capturaPermitida(data.status === "Resuelto" ? "resueltos" : "casos", data)) return;
+     if (!periodo_capturaPermitida("casos", data)) return;
 
       if (editingId) {
         if (!requireCaseRecordAdmin("editar")) return;
@@ -10692,6 +10692,7 @@
           updatedById: user.id
         };
         db.cases.push(newCase);
+        syncCaseSupabase(newCase);
         logAction("Registro creado", newCase.caseNumber);
       }
       guardarLocal();
@@ -19456,6 +19457,39 @@ window.supabaseClient = supabase.createClient(
 );
 
 console.log("Supabase conectado:", !!window.supabaseClient);
+async function syncCaseSupabase(caso) {
+  if (!window.supabaseClient || !caso) return;
+
+  const payload = {
+    numero_caso: caso.caseNumber || caso.id || "",
+    estado: caso.status || "Pendiente",
+    delito: caso.crimeType || "",
+    fecha_hecho: caso.incidentDate || null,
+    hora_hecho: caso.incidentTime || "",
+    provincia: caso.provincia || "",
+    municipio: caso.municipio || "",
+    sector: caso.incidentSector || caso.sector || "",
+    direccion: caso.incidentAddress || caso.address || "",
+    latitud: caso.latitude || null,
+    longitud: caso.longitude || null,
+    narrativa: caso.caseNarrative || caso.narrative || ""
+  };
+
+  console.log("PAYLOAD CASO A SUPABASE:", payload);
+
+  const { data, error } = await window.supabaseClient
+    .from("casos")
+    .insert([payload])
+    .select();
+
+  console.log("RESPUESTA SUPABASE CASOS:", { data, error });
+
+  if (error) {
+    console.error("Error sincronizando caso en Supabase:", error);
+  } else {
+    console.log("CASO INSERTADO CORRECTAMENTE EN SUPABASE");
+  }
+}
 </script>
 </body>
 </html>
