@@ -19499,26 +19499,24 @@ async function syncCaseSupabase(caso) {
  async function syncNarcoticosSupabase(record) {
   if (!window.supabaseClient || !record) return;
 
-  const primeraSustancia = Array.isArray(record.substances)
-    ? record.substances[0]
-    : {};
+  const sustancias = Array.isArray(record.substances) ? record.substances : [];
 
-  const payload = {
+  const payload = sustancias.map(s => ({
     codigo: record.codigo || record.id || "",
     fecha: record.fecha || record.date || null,
     division: record.division || "",
     sector: record.sector || "",
-    tipo_sustancia: primeraSustancia.type || "",
-    cantidad: Number(primeraSustancia.amount || 0),
-    unidad: primeraSustancia.unit || "",
+    tipo_sustancia: s.type || "",
+    cantidad: Number(s.amount || 0),
+    unidad: s.unit || "",
     observaciones: record.observaciones || record.observations || record.description || ""
-  };
+  }));
 
   console.log("PAYLOAD NARCOTICOS A SUPABASE:", payload);
 
   const { data, error } = await window.supabaseClient
     .from("narcoticos")
-    .insert([payload])
+    .insert(payload)
     .select();
 
   console.log("RESPUESTA SUPABASE NARCOTICOS:", { data, error });
@@ -19526,7 +19524,7 @@ async function syncCaseSupabase(caso) {
   if (error) {
     console.error("Error sincronizando narcóticos en Supabase:", error);
   } else {
-    console.log("NARCOTICO INSERTADO CORRECTAMENTE EN SUPABASE");
+    console.log("NARCOTICOS INSERTADOS CORRECTAMENTE EN SUPABASE");
   }
 }
   async function syncLaborSupabase(labor) {
