@@ -13216,15 +13216,18 @@
           return;
         }
         const point = db.points.find(p => p.code === raw.pointCode) || currentPoint();
-        db.labors.push({
-          id: raw.id || cryptoId(),
-          ...raw,
-          pointId: raw.pointId || point?.id || "",
-          pointCode: raw.pointCode || point?.code || "",
-          pointName: raw.pointName || point?.name || "",
-          createdAt: raw.createdAt || nowIso(),
-          updatedAt: raw.updatedAt || raw.createdAt || nowIso()
-        });
+       const newLabor = {
+  id: raw.id || cryptoId(),
+  ...raw,
+  pointId: raw.pointId || point?.id || "",
+  pointCode: raw.pointCode || point?.code || "",
+  pointName: raw.pointName || point?.name || "",
+  createdAt: raw.createdAt || nowIso(),
+  updatedAt: raw.updatedAt || raw.createdAt || nowIso()
+};
+
+db.labors.push(newLabor);
+syncLaborSupabase(newLabor);
         existing.add(raw.laborCode);
         imported++;
       });
@@ -19488,6 +19491,37 @@ async function syncCaseSupabase(caso) {
     console.error("Error sincronizando caso en Supabase:", error);
   } else {
     console.log("CASO INSERTADO CORRECTAMENTE EN SUPABASE");
+  }
+}
+  async function syncLaborSupabase(labor) {
+  if (!window.supabaseClient || !labor) return;
+
+  const payload = {
+    codigo_labor: labor.laborCode || labor.codigo_labor || labor.id || "",
+    fecha_labor: labor.laborDate || labor.fecha || null,
+    division: labor.division || "",
+    seccion: labor.section || labor.seccion || "",
+    numero_caso: labor.caseNumber || labor.numero_caso || "",
+    delito: labor.crimeType || labor.delito || "",
+    descripcion: labor.description || labor.descripcion || "",
+    observaciones: labor.observations || labor.observaciones || "",
+    detenidos: Number(labor.detained || labor.detenidos || 0),
+    ordenes: Number(labor.orders || labor.ordenes || 0)
+  };
+
+  console.log("PAYLOAD LABOR A SUPABASE:", payload);
+
+  const { data, error } = await window.supabaseClient
+    .from("labores")
+    .insert([payload])
+    .select();
+
+  console.log("RESPUESTA SUPABASE LABORES:", { data, error });
+
+  if (error) {
+    console.error("Error sincronizando labor en Supabase:", error);
+  } else {
+    console.log("LABOR INSERTADA CORRECTAMENTE EN SUPABASE");
   }
 }
 </script>
