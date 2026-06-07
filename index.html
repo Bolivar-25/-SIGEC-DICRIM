@@ -19496,21 +19496,21 @@ async function syncCaseSupabase(caso) {
     console.log("CASO INSERTADO CORRECTAMENTE EN SUPABASE");
   }
 }
-  async function syncNarcoticosSupabase(record) {
+ async function syncNarcoticosSupabase(record) {
   if (!window.supabaseClient || !record) return;
 
-  console.log("RECORD NARCOTICOS COMPLETO:", record);
-
-  const primeraSustancia = Array.isArray(record.substances) ? record.substances[0] : {};
+  const primeraSustancia = Array.isArray(record.substances)
+    ? record.substances[0]
+    : {};
 
   const payload = {
     codigo: record.codigo || record.id || "",
     fecha: record.fecha || record.date || null,
     division: record.division || "",
     sector: record.sector || "",
-    tipo_sustancia: primeraSustancia.tipo || primeraSustancia.name || record.tipo_sustancia || "",
-    cantidad: Number(primeraSustancia.cantidad || primeraSustancia.quantity || record.cantidad || 0),
-    unidad: primeraSustancia.unidad || primeraSustancia.unit || record.unidad || "",
+    tipo_sustancia: primeraSustancia.type || "",
+    cantidad: Number(primeraSustancia.amount || 0),
+    unidad: primeraSustancia.unit || "",
     observaciones: record.observaciones || record.observations || record.description || ""
   };
 
@@ -19560,7 +19560,6 @@ if (error) {
   console.log("LABOR INSERTADA CORRECTAMENTE EN SUPABASE");
 }
 }
-
 async function syncOperativeSupabase(operative) {
   if (!window.supabaseClient || !operative) return;
   console.log("OPERATIVO COMPLETO:", operative);
