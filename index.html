@@ -17858,11 +17858,27 @@ logAction("Operativo creado", operative.operativeCode);
         if (!isAdminGeneral()) return alert("Solo el Administrador General puede editar ocupaciones.");
         const index = db.ocupacionesNarcoticas.findIndex(n => n.id === id);
         if (index < 0) return;
-        db.ocupacionesNarcoticas[index] = { ...db.ocupacionesNarcoticas[index], ...data, updatedAt: now, updatedById: currentUser().id, updatedBy: currentUser().username };
+        db.ocupacionesNarcoticas[index] = {
+  ...db.ocupacionesNarcoticas[index],
+  ...data,
+  substances: narcoticos_collectSustancias(),
+  updatedAt: now,
+  updatedById: currentUser().id,
+  updatedBy: currentUser().username
+};
         logAction("Ocupación editada", db.ocupacionesNarcoticas[index].codigo);
       } else {
         const point = currentPoint();
-        const record = { ...data, id: cryptoId(), codigo: narcoticos_generarCodigo(point), createdAt: now, updatedAt: now, updatedById: currentUser().id, updatedBy: currentUser().username };
+       const record = {
+  ...data,
+  substances: narcoticos_collectSustancias(),
+  id: cryptoId(),
+  codigo: narcoticos_generarCodigo(point),
+  createdAt: now,
+  updatedAt: now,
+  updatedById: currentUser().id,
+  updatedBy: currentUser().username
+};
         db.ocupacionesNarcoticas.push(record);
         syncNarcoticosSupabase(record);
         logAction("Ocupación creada", record.codigo);
