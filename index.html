@@ -19497,6 +19497,9 @@ async function syncCaseSupabase(caso) {
   }
 }
   async function syncNarcoticosSupabase(record) {
+    
+    console.log("RECORD NARCOTICOS COMPLETO:", record);
+    
   if (!window.supabaseClient || !record) return;
 
   const primeraSustancia = Array.isArray(record.substances) ? record.substances[0] : {};
