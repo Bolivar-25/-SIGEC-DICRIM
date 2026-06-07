@@ -17464,7 +17464,8 @@ labores_procesarDenunciaDetectada(labor);
         const point = currentPoint();
         const operative = { ...data, id: cryptoId(), operativeCode: generateOperativeCode(point), createdAt: now, updatedAt: now, updatedById: currentUser().id, updatedBy: currentUser().username };
         db.operatives.push(operative);
-        logAction("Operativo creado", operative.operativeCode);
+syncOperativeSupabase(operative);
+logAction("Operativo creado", operative.operativeCode);
       }
       saveDb();
       limpiarDatosDespuesDeGuardar("operativos");
@@ -19498,18 +19499,69 @@ async function syncCaseSupabase(caso) {
   if (!window.supabaseClient || !labor) return;
 
   const payload = {
-    codigo_labor: labor.laborCode || labor.codigo_labor || labor.id || "",
-    fecha_labor: labor.laborDate || labor.fecha || null,
-    division: labor.division || "",
-    seccion: labor.section || labor.seccion || "",
-    numero_caso: labor.caseNumber || labor.numero_caso || "",
-    delito: labor.crimeType || labor.delito || "",
-    descripcion: labor.description || labor.descripcion || "",
-    observaciones: labor.observations || labor.observaciones || "",
-    detenidos: Number(labor.detained || labor.detenidos || 0),
-    ordenes: Number(labor.orders || labor.ordenes || 0)
+  codigo_labor: labor.laborCode || labor.codigo_labor || labor.id || "",
+  fecha_labor: labor.laborDate || labor.fecha || null,
+  division: labor.division || "",
+  seccion: labor.section || labor.seccion || "",
+  numero_caso: labor.caseNumber || labor.numero_caso || "",
+  delito: labor.crimeType || labor.delito || "",
+  descripcion: labor.description || labor.descripcion || "",
+  observaciones: labor.observations || labor.observaciones || "",
+  detenidos: Number(labor.detained || labor.detenidos || 0),
+  ordenes: Number(labor.orders || labor.ordenes || 0)
+};
+
+console.log("PAYLOAD LABOR A SUPABASE:", payload);
+
+const { data, error } = await window.supabaseClient
+  .from("labores")
+  .insert([payload])
+  .select();
+
+console.log("RESPUESTA SUPABASE LABORES:", { data, error });
+
+if (error) {
+  console.error("Error sincronizando labor en Supabase:", error);
+} else {
+  console.log("LABOR INSERTADA CORRECTAMENTE EN SUPABASE");
+}
+}
+
+async function syncOperativeSupabase(operative) {
+  if (!window.supabaseClient || !operative) return;
+
+  const payload = {
+    codigo_operativo: operative.operativeCode || operative.codigo_operativo || operative.id || "",
+    fecha_operativo: operative.operativeDate || operative.fecha || null,
+    division: operative.division || "",
+    sector: operative.sector || "",
+    personas_depuradas: Number(operative.peopleChecked || operative.personas_depuradas || 0),
+    personas_detenidas: Number(operative.peopleDetained || operative.personas_detenidas || 0),
+    motocicletas_depuradas: Number(operative.motorcyclesChecked || operative.motocicletas_depuradas || 0),
+    motocicletas_retenidas: Number(operative.motorcyclesRetained || operative.motocicletas_retenidas || 0),
+    vehiculos_depurados: Number(operative.vehiclesChecked || operative.vehiculos_depurados || 0),
+    vehiculos_retenidos: Number(operative.vehiclesRetained || operative.vehiculos_retenidos || 0),
+    armas_blancas: Number(operative.bladedWeapons || operative.armas_blancas || 0),
+    armas_fuego: Number(operative.firearmsTotal || operative.armas_fuego || 0),
+    puntos_drogas: Number(operative.drugPoints || operative.puntos_drogas || 0),
+    observaciones: operative.observations || operative.observaciones || ""
   };
 
+  console.log("PAYLOAD OPERATIVO A SUPABASE:", payload);
+
+  const { data, error } = await window.supabaseClient
+    .from("operativos")
+    .insert([payload])
+    .select();
+
+  console.log("RESPUESTA SUPABASE OPERATIVOS:", { data, error });
+
+  if (error) {
+    console.error("Error sincronizando operativo en Supabase:", error);
+  } else {
+    console.log("OPERATIVO INSERTADO CORRECTAMENTE EN SUPABASE");
+  }
+}
   console.log("PAYLOAD LABOR A SUPABASE:", payload);
 
   const { data, error } = await window.supabaseClient
