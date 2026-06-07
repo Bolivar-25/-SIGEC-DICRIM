@@ -19525,6 +19525,18 @@ console.log("SUBSTANCES:", record.substances);
     division: record.division || "",
     sector: record.sector || "",
 
+    latitud: Number(record.latitud || 0),
+longitud: Number(record.longitud || 0),
+punto_intervenido: record.pointReference || record.pointAddress || "",
+personas_detenidas: Number(record.peopleDetained || 0),
+evidencia_ocupada: Array.isArray(record.evidenciasOcupadas)
+  ? record.evidenciasOcupadas.map(e => e.descripcion || e.description || e.tipo || "").filter(Boolean).join(", ")
+  : "",
+dinero_ocupado: Number(record.dineroEfectivo?.monto || record.dineroEfectivo?.amount || 0),
+moneda_dinero_ocupado: record.dineroEfectivo?.moneda || record.dineroEfectivo?.currency || "DOP",
+dinero_ocupado_detalle: "",
+maquinas_tragamonedas: Number(record.tragamonedas?.cantidad || record.tragamonedas?.amount || 0),
+
  marihuana_detalle: "",
 cocaina_detalle: "",
 crack_detalle: "",
@@ -19587,6 +19599,32 @@ payload.total_sustancias += cantidad;
   heroina_detalle: payload.heroina_detalle,
   fentanilo_detalle: payload.fentanilo_detalle
 });
+
+ if (payload.dinero_ocupado > 0) {
+
+    let simbolo = "";
+
+    switch (payload.moneda_dinero_ocupado) {
+
+        case "USD":
+            simbolo = "US$";
+            break;
+
+        case "EUR":
+            simbolo = "€";
+            break;
+
+        case "DOP":
+            simbolo = "RD$";
+            break;
+
+        default:
+            simbolo = payload.moneda_dinero_ocupado;
+    }
+
+    payload.dinero_ocupado_detalle =
+        `${simbolo} ${payload.dinero_ocupado.toLocaleString()}`;
+}
 
 const { data, error } = await window.supabaseClient
   .from("narcoticos")
