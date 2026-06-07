@@ -19557,25 +19557,10 @@ async function syncOperativeSupabase(operative) {
   console.log("RESPUESTA SUPABASE OPERATIVOS:", { data, error });
 
   if (error) {
-    console.error("Error sincronizando operativo en Supabase:", error);
-  } else {
-    console.log("OPERATIVO INSERTADO CORRECTAMENTE EN SUPABASE");
-  }
+  console.error("Error sincronizando operativo en Supabase:", error);
+} else {
+  console.log("OPERATIVO INSERTADO CORRECTAMENTE EN SUPABASE");
 }
-  console.log("PAYLOAD LABOR A SUPABASE:", payload);
-
-  const { data, error } = await window.supabaseClient
-    .from("labores")
-    .insert([payload])
-    .select();
-
-  console.log("RESPUESTA SUPABASE LABORES:", { data, error });
-
-  if (error) {
-    console.error("Error sincronizando labor en Supabase:", error);
-  } else {
-    console.log("LABOR INSERTADA CORRECTAMENTE EN SUPABASE");
-  }
 }
 </script>
 </body>
