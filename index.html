@@ -19533,6 +19533,16 @@ async function syncCaseSupabase(caso) {
     heroina: 0,
     fentanilo: 0,
 
+    marihuana_unidad: "",
+cocaina_unidad: "",
+crack_unidad: "",
+molly_unidad: "",
+tusy_unidad: "",
+extasis_unidad: "",
+metanfetamina_unidad: "",
+heroina_unidad: "",
+fentanilo_unidad: "",
+
     unidad_general: "",
     total_sustancias: 0,
     observaciones: record.observaciones || record.observations || record.description || ""
@@ -19542,20 +19552,34 @@ async function syncCaseSupabase(caso) {
     const tipo = (s.type || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
     const cantidad = Number(s.amount || 0);
 
-    if (tipo.includes("marihuana")) payload.marihuana += cantidad;
-    else if (tipo.includes("cocaina")) payload.cocaina += cantidad;
-    else if (tipo.includes("crack")) payload.crack += cantidad;
-    else if (tipo.includes("molly")) payload.molly += cantidad;
-    else if (tipo.includes("tusy")) payload.tusy += cantidad;
-    else if (tipo.includes("extasis")) payload.extasis += cantidad;
-    else if (tipo.includes("metanfetamina")) payload.metanfetamina += cantidad;
-    else if (tipo.includes("heroina")) payload.heroina += cantidad;
-    else if (tipo.includes("fentanilo")) payload.fentanilo += cantidad;
-
-    if (!payload.unidad_general && s.unit) payload.unidad_general = s.unit;
-    payload.total_sustancias += cantidad;
-  });
-
+  if (tipo.includes("marihuana")) {
+  payload.marihuana += cantidad;
+  payload.marihuana_unidad = s.unit || "";
+} else if (tipo.includes("cocaina")) {
+  payload.cocaina += cantidad;
+  payload.cocaina_unidad = s.unit || "";
+} else if (tipo.includes("crack")) {
+  payload.crack += cantidad;
+  payload.crack_unidad = s.unit || "";
+} else if (tipo.includes("molly")) {
+  payload.molly += cantidad;
+  payload.molly_unidad = s.unit || "";
+} else if (tipo.includes("tusy")) {
+  payload.tusy += cantidad;
+  payload.tusy_unidad = s.unit || "";
+} else if (tipo.includes("extasis")) {
+  payload.extasis += cantidad;
+  payload.extasis_unidad = s.unit || "";
+} else if (tipo.includes("metanfetamina")) {
+  payload.metanfetamina += cantidad;
+  payload.metanfetamina_unidad = s.unit || "";
+} else if (tipo.includes("heroina")) {
+  payload.heroina += cantidad;
+  payload.heroina_unidad = s.unit || "";
+} else if (tipo.includes("fentanilo")) {
+  payload.fentanilo += cantidad;
+  payload.fentanilo_unidad = s.unit || "";
+}
   console.log("PAYLOAD NARCOTICOS A SUPABASE:", payload);
 
   const { data, error } = await window.supabaseClient
