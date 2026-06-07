@@ -19525,17 +19525,31 @@ console.log("SUBSTANCES:", record.substances);
     division: record.division || "",
     sector: record.sector || "",
 
-    latitud: Number(record.latitud || 0),
+latitud: Number(record.latitud || 0),
 longitud: Number(record.longitud || 0),
 punto_intervenido: record.pointReference || record.pointAddress || "",
 personas_detenidas: Number(record.peopleDetained || 0),
 evidencia_ocupada: Array.isArray(record.evidenciasOcupadas)
   ? record.evidenciasOcupadas.map(e => e.descripcion || e.description || e.tipo || "").filter(Boolean).join(", ")
   : "",
-dinero_ocupado: Number(record.dineroEfectivo?.monto || record.dineroEfectivo?.amount || 0),
-moneda_dinero_ocupado: record.dineroEfectivo?.moneda || record.dineroEfectivo?.currency || "DOP",
-dinero_ocupado_detalle: "",
-maquinas_tragamonedas: Number(record.tragamonedas?.cantidad || record.tragamonedas?.amount || 0),
+dinero_ocupado: Number(
+  record.dineroEfectivo?.amount ||
+  record.dineroEfectivo?.monto ||
+  record.dineroEfectivo?.quantity ||
+  0
+),
+
+moneda_dinero_ocupado:
+  record.dineroEfectivo?.currency ||
+  record.dineroEfectivo?.moneda ||
+  "DOP",
+
+maquinas_tragamonedas: Number(
+  record.tragamonedas?.quantity ||
+  record.tragamonedas?.cantidad ||
+  record.tragamonedas?.amount ||
+  0
+),
 
  marihuana_detalle: "",
 cocaina_detalle: "",
