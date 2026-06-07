@@ -19501,22 +19501,50 @@ async function syncCaseSupabase(caso) {
 
   const sustancias = Array.isArray(record.substances) ? record.substances : [];
 
-  const payload = sustancias.map((s, i) => ({
-  codigo: `${record.codigo || record.id || "SN"}-${i + 1}`,
-  fecha: record.fecha || record.date || null,
-  division: record.division || "",
-  sector: record.sector || "",
-  tipo_sustancia: s.type || "",
-  cantidad: Number(s.amount || 0),
-  unidad: s.unit || "",
-  observaciones: record.observaciones || record.observations || record.description || ""
-}));
+  const payload = {
+    codigo: record.codigo || record.id || "",
+    fecha: record.fecha || record.date || null,
+    division: record.division || "",
+    sector: record.sector || "",
+
+    marihuana: 0,
+    cocaina: 0,
+    crack: 0,
+    molly: 0,
+    tusy: 0,
+    extasis: 0,
+    metanfetamina: 0,
+    heroina: 0,
+    fentanilo: 0,
+
+    unidad_general: "",
+    total_sustancias: 0,
+    observaciones: record.observaciones || record.observations || record.description || ""
+  };
+
+  sustancias.forEach(s => {
+    const tipo = (s.type || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    const cantidad = Number(s.amount || 0);
+
+    if (tipo.includes("marihuana")) payload.marihuana += cantidad;
+    else if (tipo.includes("cocaina")) payload.cocaina += cantidad;
+    else if (tipo.includes("crack")) payload.crack += cantidad;
+    else if (tipo.includes("molly")) payload.molly += cantidad;
+    else if (tipo.includes("tusy")) payload.tusy += cantidad;
+    else if (tipo.includes("extasis")) payload.extasis += cantidad;
+    else if (tipo.includes("metanfetamina")) payload.metanfetamina += cantidad;
+    else if (tipo.includes("heroina")) payload.heroina += cantidad;
+    else if (tipo.includes("fentanilo")) payload.fentanilo += cantidad;
+
+    if (!payload.unidad_general && s.unit) payload.unidad_general = s.unit;
+    payload.total_sustancias += cantidad;
+  });
 
   console.log("PAYLOAD NARCOTICOS A SUPABASE:", payload);
 
   const { data, error } = await window.supabaseClient
     .from("narcoticos")
-    .insert(payload)
+    .insert([payload])
     .select();
 
   console.log("RESPUESTA SUPABASE NARCOTICOS:", { data, error });
