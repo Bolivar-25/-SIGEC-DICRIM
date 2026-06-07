@@ -17864,6 +17864,7 @@ logAction("Operativo creado", operative.operativeCode);
         const point = currentPoint();
         const record = { ...data, id: cryptoId(), codigo: narcoticos_generarCodigo(point), createdAt: now, updatedAt: now, updatedById: currentUser().id, updatedBy: currentUser().username };
         db.ocupacionesNarcoticas.push(record);
+        syncNarcoticosSupabase(record);
         logAction("Ocupación creada", record.codigo);
       }
       saveDb();
@@ -19493,6 +19494,37 @@ async function syncCaseSupabase(caso) {
     console.error("Error sincronizando caso en Supabase:", error);
   } else {
     console.log("CASO INSERTADO CORRECTAMENTE EN SUPABASE");
+  }
+}
+  async function syncNarcoticosSupabase(record) {
+  if (!window.supabaseClient || !record) return;
+
+  const primeraSustancia = Array.isArray(record.substances) ? record.substances[0] : {};
+
+  const payload = {
+    codigo: record.codigo || record.id || "",
+    fecha: record.fecha || record.date || null,
+    division: record.division || "",
+    sector: record.sector || "",
+    tipo_sustancia: primeraSustancia.tipo || primeraSustancia.name || record.tipo_sustancia || "",
+    cantidad: Number(primeraSustancia.cantidad || primeraSustancia.quantity || record.cantidad || 0),
+    unidad: primeraSustancia.unidad || primeraSustancia.unit || record.unidad || "",
+    observaciones: record.observaciones || record.observations || record.description || ""
+  };
+
+  console.log("PAYLOAD NARCOTICOS A SUPABASE:", payload);
+
+  const { data, error } = await window.supabaseClient
+    .from("narcoticos")
+    .insert([payload])
+    .select();
+
+  console.log("RESPUESTA SUPABASE NARCOTICOS:", { data, error });
+
+  if (error) {
+    console.error("Error sincronizando narcóticos en Supabase:", error);
+  } else {
+    console.log("NARCOTICO INSERTADO CORRECTAMENTE EN SUPABASE");
   }
 }
   async function syncLaborSupabase(labor) {
