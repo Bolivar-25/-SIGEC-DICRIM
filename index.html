@@ -19501,16 +19501,16 @@ async function syncCaseSupabase(caso) {
 
   const sustancias = Array.isArray(record.substances) ? record.substances : [];
 
-  const payload = sustancias.map(s => ({
-    codigo: record.codigo || record.id || "",
-    fecha: record.fecha || record.date || null,
-    division: record.division || "",
-    sector: record.sector || "",
-    tipo_sustancia: s.type || "",
-    cantidad: Number(s.amount || 0),
-    unidad: s.unit || "",
-    observaciones: record.observaciones || record.observations || record.description || ""
-  }));
+  const payload = sustancias.map((s, i) => ({
+  codigo: `${record.codigo || record.id || "SN"}-${i + 1}`,
+  fecha: record.fecha || record.date || null,
+  division: record.division || "",
+  sector: record.sector || "",
+  tipo_sustancia: s.type || "",
+  cantidad: Number(s.amount || 0),
+  unidad: s.unit || "",
+  observaciones: record.observaciones || record.observations || record.description || ""
+}));
 
   console.log("PAYLOAD NARCOTICOS A SUPABASE:", payload);
 
