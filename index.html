@@ -19545,6 +19545,16 @@ metanfetamina_unidad: "",
 heroina_unidad: "",
 fentanilo_unidad: "",
 
+    marihuana_detalle: "",
+cocaina_detalle: "",
+crack_detalle: "",
+molly_detalle: "",
+tusy_detalle: "",
+extasis_detalle: "",
+metanfetamina_detalle: "",
+heroina_detalle: "",
+fentanilo_detalle: "",
+
     unidad_general: "",
     total_sustancias: 0,
     observaciones: record.observaciones || record.observations || record.description || ""
@@ -19557,30 +19567,47 @@ fentanilo_unidad: "",
   if (tipo.includes("marihuana")) {
   payload.marihuana += cantidad;
   payload.marihuana_unidad = s.unit || "";
+  payload.marihuana_detalle = `${payload.marihuana} ${s.unit || ""}`.trim();
+
 } else if (tipo.includes("cocaina")) {
   payload.cocaina += cantidad;
   payload.cocaina_unidad = s.unit || "";
+  payload.cocaina_detalle = `${payload.cocaina} ${s.unit || ""}`.trim();
+
 } else if (tipo.includes("crack")) {
   payload.crack += cantidad;
   payload.crack_unidad = s.unit || "";
+  payload.crack_detalle = `${payload.crack} ${s.unit || ""}`.trim();
+
 } else if (tipo.includes("molly")) {
   payload.molly += cantidad;
   payload.molly_unidad = s.unit || "";
+  payload.molly_detalle = `${payload.molly} ${s.unit || ""}`.trim();
+
 } else if (tipo.includes("tusy")) {
   payload.tusy += cantidad;
   payload.tusy_unidad = s.unit || "";
+  payload.tusy_detalle = `${payload.tusy} ${s.unit || ""}`.trim();
+
 } else if (tipo.includes("extasis")) {
   payload.extasis += cantidad;
   payload.extasis_unidad = s.unit || "";
+  payload.extasis_detalle = `${payload.extasis} ${s.unit || ""}`.trim();
+
 } else if (tipo.includes("metanfetamina")) {
   payload.metanfetamina += cantidad;
   payload.metanfetamina_unidad = s.unit || "";
+  payload.metanfetamina_detalle = `${payload.metanfetamina} ${s.unit || ""}`.trim();
+
 } else if (tipo.includes("heroina")) {
   payload.heroina += cantidad;
   payload.heroina_unidad = s.unit || "";
+  payload.heroina_detalle = `${payload.heroina} ${s.unit || ""}`.trim();
+
 } else if (tipo.includes("fentanilo")) {
   payload.fentanilo += cantidad;
   payload.fentanilo_unidad = s.unit || "";
+  payload.fentanilo_detalle = `${payload.fentanilo} ${s.unit || ""}`.trim();
 }
   if (!payload.unidad_general && s.unit) payload.unidad_general = s.unit;
 payload.total_sustancias += cantidad;
