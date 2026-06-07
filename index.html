@@ -19555,8 +19555,7 @@ metanfetamina_detalle: "",
 heroina_detalle: "",
 fentanilo_detalle: "",
 
-    unidad_general: "",
-    total_sustancias: 0,
+        total_sustancias: 0,
     observaciones: record.observaciones || record.observations || record.description || ""
   };
 
@@ -19609,7 +19608,7 @@ fentanilo_detalle: "",
   payload.fentanilo_unidad = s.unit || "";
   payload.fentanilo_detalle = `${payload.fentanilo} ${s.unit || ""}`.trim();
 }
-  if (!payload.unidad_general && s.unit) payload.unidad_general = s.unit;
+
 payload.total_sustancias += cantidad;
 });
    
