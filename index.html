@@ -19538,7 +19538,15 @@ async function syncOperativeSupabase(operative) {
     personas_depuradas: Number(operative.peopleChecked || operative.personas_depuradas || 0),
     personas_detenidas: Number(operative.peopleDetained || operative.personas_detenidas || 0),
     motocicletas_depuradas: Number(operative.motorcyclesChecked || operative.motocicletas_depuradas || 0),
-    motocicletas_retenidas: Number(operative.motorcyclesRetained || operative.motocicletas_retenidas || 0),
+  motocicletas_retenidas: Number(
+  operative.motorcyclesRetained ||
+  operative.motorcyclesDetained ||
+  operative.motorcyclesHeld ||
+  operative.motocicletas_retenidas ||
+  operative.motocicletas_detenidas ||
+  operative.motocicletas_retenidas_detenidas ||
+  0
+),
     vehiculos_depurados: Number(operative.vehiclesChecked || operative.vehiculos_depurados || 0),
     vehiculos_retenidos: Number(operative.vehiclesRetained || operative.vehiculos_retenidos || 0),
     armas_blancas: Number(operative.bladedWeapons || operative.armas_blancas || 0),
