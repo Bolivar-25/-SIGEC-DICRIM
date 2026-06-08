@@ -19530,7 +19530,7 @@ longitud: Number(record.longitud || 0),
 punto_intervenido: record.pointReference || record.pointAddress || "",
 personas_detenidas: Number(record.peopleDetained || 0),
     
-evidencia_ocupada: Array.isArray(record.evidenciasOcupadas)
+tipo_evidencia: Array.isArray(record.evidenciasOcupadas)
   ? record.evidenciasOcupadas
       .map(e =>
         e.descripcion ||
