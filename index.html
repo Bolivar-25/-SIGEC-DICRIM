@@ -19707,6 +19707,14 @@ async function syncOperativeSupabase(operative) {
   if (!window.supabaseClient || !operative) return;
   console.log("OPERATIVO COMPLETO:", operative);
 
+  console.log("DINERO EFECTIVO:", operative.dineroEfectivo);
+
+console.log("AMOUNT:", operative.dineroEfectivo?.amount);
+
+console.log("ITEMS:", operative.dineroEfectivo?.items);
+
+console.log("ITEM 0:", operative.dineroEfectivo?.items?.[0]);
+  
   const payload = {
     codigo_operativo: operative.operativeCode || operative.codigo_operativo || operative.id || "",
     fecha_operativo: operative.operativeDate || operative.fecha || null,
@@ -19739,16 +19747,19 @@ motocicletas_recuperadas: Number(
 ),
 
 dinero_ocupado: Number(
-  operative.dinero_ocupado ||
-  operative.dineroOcupado ||
-  operative.cashSeized ||
+  operative.dineroEfectivo?.amount ||
+  operative.dineroEfectivo?.monto ||
+  operative.dineroEfectivo?.total ||
+  operative.dineroEfectivo?.items?.[0]?.amount ||
+  operative.dineroEfectivo?.items?.[0]?.monto ||
   0
 ),
 
 moneda_dinero_ocupado:
-  operative.moneda_dinero_ocupado ||
-  operative.monedaDineroOcupado ||
-  operative.currency ||
+  operative.dineroEfectivo?.currency ||
+  operative.dineroEfectivo?.moneda ||
+  operative.dineroEfectivo?.items?.[0]?.currency ||
+  operative.dineroEfectivo?.items?.[0]?.moneda ||
   "DOP",
 
 dinero_ocupado_detalle: "",
@@ -19758,6 +19769,27 @@ dinero_ocupado_detalle: "",
     observaciones: operative.observations || operative.observaciones || ""
   };
 
+  if (payload.dinero_ocupado > 0) {
+  let simbolo = "";
+
+  switch (payload.moneda_dinero_ocupado) {
+    case "USD":
+      simbolo = "US$";
+      break;
+    case "EUR":
+      simbolo = "€";
+      break;
+    case "DOP":
+      simbolo = "RD$";
+      break;
+    default:
+      simbolo = payload.moneda_dinero_ocupado;
+  }
+
+  payload.dinero_ocupado_detalle =
+    `${simbolo} ${payload.dinero_ocupado.toLocaleString()}`;
+}
+  
   console.log("PAYLOAD OPERATIVO A SUPABASE:", payload);
 
   const { data, error } = await window.supabaseClient
