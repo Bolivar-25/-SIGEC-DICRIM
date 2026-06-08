@@ -19494,8 +19494,22 @@ console.log("CASO COMPLETO:", caso);
     municipio: caso.municipio || "",
     sector: caso.incidentSector || caso.sector || "",
     direccion: caso.incidentAddress || caso.address || "",
-    latitud: caso.latitude || null,
-    longitud: caso.longitude || null,
+   latitud: Number(
+  caso.latitud ||
+  caso.latitude ||
+  caso.incidentLatitude ||
+  caso.latitudeIncident ||
+  0
+) || null,
+
+longitud: Number(
+  caso.longitud ||
+  caso.longitude ||
+  caso.incidentLongitude ||
+  caso.longitudeIncident ||
+  0
+) || null,
+    
     medio_utilizado: caso.methodUsed || "",
 arma_utilizada: caso.weaponUsed || "",
 direccion_hecho: caso.incidentAddress || caso.address || "",
