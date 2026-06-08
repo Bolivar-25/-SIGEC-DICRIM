@@ -19481,6 +19481,8 @@ window.supabaseClient = supabase.createClient(
 console.log("Supabase conectado:", !!window.supabaseClient);
 async function syncCaseSupabase(caso) {
   if (!window.supabaseClient || !caso) return;
+  console.log("VERSION CASOS NUEVOS CAMPOS ACTIVA");
+console.log("CASO COMPLETO:", caso);
 
   const payload = {
     numero_caso: caso.caseNumber || caso.id || "",
