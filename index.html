@@ -19494,8 +19494,59 @@ async function syncCaseSupabase(caso) {
     direccion: caso.incidentAddress || caso.address || "",
     latitud: caso.latitude || null,
     longitud: caso.longitude || null,
+    medio_utilizado: caso.methodUsed || "",
+arma_utilizada: caso.weaponUsed || "",
+direccion_hecho: caso.incidentAddress || caso.address || "",
+
+edad_victima: Number(caso.victimAge || 0),
+sexo_victima: caso.victimSex || "",
+nacionalidad_victima: caso.victimNationality || "",
+ocupacion_victima: caso.victimOccupation || "",
+
+alias_imputado: caso.accusedAlias || "",
+edad_imputado: Number(caso.accusedAge || 0),
+sexo_imputado: caso.accusedSex || "",
+nacionalidad_imputado: caso.accusedNationality || "",
+ocupacion_imputado: caso.accusedOccupation || "",
+
+arma_ocupada: caso.seizedWeapon || "",
+vehiculo_ocupado_recuperado: caso.seizedVehicle || caso.recoveredVehicle || "",
+ordenes_judiciales_ejecutadas: Number(caso.courtOrder || caso.executedOrders || 0),
+maquinas_tragamonedas_ocupadas: Number(caso.tragamonedas?.quantity || caso.tragamonedas?.cantidad || 0),
+
+dinero_ocupado: Number(caso.dineroEfectivo?.amount || caso.dineroEfectivo?.monto || 0),
+moneda_dinero_ocupado: caso.dineroEfectivo?.currency || caso.dineroEfectivo?.moneda || "DOP",
+dinero_ocupado_detalle: "",
+
+propiedad_recuperada: Array.isArray(caso.recoveredProperties)
+  ? caso.recoveredProperties
+      .map(p => p.description || p.descripcion || p.name || p.nombre || JSON.stringify(p))
+      .filter(Boolean)
+      .join(", ")
+  : caso.recoveredProperty || "",
     narrativa: caso.caseNarrative || caso.narrative || ""
   };
+
+  if (payload.dinero_ocupado > 0) {
+  let simbolo = "";
+
+  switch (payload.moneda_dinero_ocupado) {
+    case "USD":
+      simbolo = "US$";
+      break;
+    case "EUR":
+      simbolo = "€";
+      break;
+    case "DOP":
+      simbolo = "RD$";
+      break;
+    default:
+      simbolo = payload.moneda_dinero_ocupado;
+  }
+
+  payload.dinero_ocupado_detalle =
+    `${simbolo} ${payload.dinero_ocupado.toLocaleString()}`;
+}
 
   console.log("PAYLOAD CASO A SUPABASE:", payload);
 
