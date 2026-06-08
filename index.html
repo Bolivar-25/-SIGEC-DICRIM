@@ -19707,6 +19707,20 @@ async function syncOperativeSupabase(operative) {
   if (!window.supabaseClient || !operative) return;
   console.log("OPERATIVO COMPLETO:", operative);
 
+  const montoDineroOperativo = Number(
+  operative.dineroEfectivo?.amount ||
+  operative.dineroEfectivo?.monto ||
+  0
+);
+
+const monedaDineroOperativo =
+  operative.dineroEfectivo?.currency ||
+  operative.dineroEfectivo?.moneda ||
+  "DOP";
+
+console.log("MONTO DINERO OPERATIVO:", montoDineroOperativo);
+console.log("MONEDA DINERO OPERATIVO:", monedaDineroOperativo);
+
   console.log("DINERO EFECTIVO:", operative.dineroEfectivo);
 
 console.log("AMOUNT:", operative.dineroEfectivo?.amount);
@@ -19746,21 +19760,9 @@ motocicletas_recuperadas: Number(
   0
 ),
 
-dinero_ocupado: Number(
-  operative.dineroEfectivo?.amount ||
-  operative.dineroEfectivo?.monto ||
-  operative.dineroEfectivo?.total ||
-  operative.dineroEfectivo?.items?.[0]?.amount ||
-  operative.dineroEfectivo?.items?.[0]?.monto ||
-  0
-),
+dinero_ocupado: montoDineroOperativo,
 
-moneda_dinero_ocupado:
-  operative.dineroEfectivo?.currency ||
-  operative.dineroEfectivo?.moneda ||
-  operative.dineroEfectivo?.items?.[0]?.currency ||
-  operative.dineroEfectivo?.items?.[0]?.moneda ||
-  "DOP",
+moneda_dinero_ocupado: monedaDineroOperativo,
 
 dinero_ocupado_detalle: "",
     armas_blancas: Number(operative.bladedWeapons || operative.armas_blancas || 0),
