@@ -19726,6 +19726,32 @@ async function syncOperativeSupabase(operative) {
 ),
     vehiculos_depurados: Number(operative.vehiclesChecked || operative.vehiculos_depurados || 0),
     vehiculos_retenidos: Number(operative.vehiclesRetained || operative.vehiculos_retenidos || 0),
+  vehiculos_recuperados: Number(
+  operative.vehiclesRecovered ||
+  operative.vehiculos_recuperados ||
+  0
+),
+
+motocicletas_recuperadas: Number(
+  operative.motorcyclesRecovered ||
+  operative.motocicletas_recuperadas ||
+  0
+),
+
+dinero_ocupado: Number(
+  operative.dinero_ocupado ||
+  operative.dineroOcupado ||
+  operative.cashSeized ||
+  0
+),
+
+moneda_dinero_ocupado:
+  operative.moneda_dinero_ocupado ||
+  operative.monedaDineroOcupado ||
+  operative.currency ||
+  "DOP",
+
+dinero_ocupado_detalle: "",
     armas_blancas: Number(operative.bladedWeapons || operative.armas_blancas || 0),
     armas_fuego: Number(operative.firearmsTotal || operative.armas_fuego || 0),
     puntos_drogas: Number(operative.drugPoints || operative.puntos_drogas || 0),
