@@ -19527,6 +19527,12 @@ ocupacion_imputado: caso.accusedOccupation || "",
 
 arma_ocupada: caso.seizedWeapon || "",
 vehiculo_ocupado_recuperado: caso.seizedVehicle || caso.recoveredVehicle || "",
+propiedad_sustraida: Array.isArray(caso.stolenProperties)
+  ? caso.stolenProperties
+      .map(p => p.property || p.description || p.descripcion || p.name || p.nombre || JSON.stringify(p))
+      .filter(Boolean)
+      .join(", ")
+  : caso.stolenProperty || "",
 ordenes_judiciales_ejecutadas: Number(caso.courtOrder || caso.executedOrders || 0),
 maquinas_tragamonedas_ocupadas: Number(caso.tragamonedas?.quantity || caso.tragamonedas?.cantidad || 0),
 
