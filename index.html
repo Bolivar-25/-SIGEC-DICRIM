@@ -19697,7 +19697,7 @@ console.log("CONDICION ARMA FINAL:", payload.condicion_arma_ocupada);
 
   const { data, error } = await window.supabaseClient
   .from("casos")
-  .upsert([payload], { onConflict: "numero_caso" })
+  .upsert([payload], { onConflict: "numero_caso", ignoreDuplicates: false })
   .select();
 
   console.log("RESPUESTA SUPABASE CASOS:", { data, error });
