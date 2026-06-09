@@ -9784,25 +9784,82 @@ function buscarArmaRegistradaPorNumero(numero) {
       ["resolvedOrderType","resolvedOrderNumber","resolvedOrderIssueDate","resolvedOrderExecutionDate","resolvedOrderCourt","resolvedOrderAuthority","resolvedOrderResult","resolvedOrderObservations"].forEach(id => { if (el(id)) el(id).value = ""; });
     }
 
-    function agregarOrdenCasoResuelto() {
-      const order = {
-        type: el("resolvedOrderType")?.value || "",
-        number: el("resolvedOrderNumber")?.value.trim() || "",
-        issueDate: el("resolvedOrderIssueDate")?.value || "",
-        executionDate: el("resolvedOrderExecutionDate")?.value || "",
-        court: el("resolvedOrderCourt")?.value.trim() || "",
-        authority: el("resolvedOrderAuthority")?.value.trim() || "",
-        result: el("resolvedOrderResult")?.value || "",
-        observations: el("resolvedOrderObservations")?.value.trim() || ""
+    function normalizarNumeroOrden(valor) {
+  return String(valor || "")
+    .trim()
+    .toUpperCase()
+    .replace(/\s+/g, "")
+    .replace(/[-_]/g, "");
+}
+
+function buscarOrdenRegistradaPorNumero(numero) {
+  const numeroNormalizado = normalizarNumeroOrden(numero);
+  if (!numeroNormalizado) return null;
+
+  for (const orden of currentResolvedOrders || []) {
+    if (normalizarNumeroOrden(orden.number || orden.numero || orden.orderNumber) === numeroNormalizado) {
+      return {
+        type: orden.type || "Orden judicial",
+        number: orden.number || numero,
+        division: currentPoint()?.division || "Formulario actual",
+        fecha: new Date().toISOString().slice(0, 10)
       };
-      if (!order.type && !order.number && !order.issueDate && !order.executionDate && !order.court && !order.authority && !order.result && !order.observations) {
-        alert("Debe completar al menos un dato de la orden judicial.");
-        return;
-      }
-      currentResolvedOrders.push(order);
-      limpiarCamposOrdenCasoResuelto();
-      renderResolvedOrders();
     }
+  }
+
+  for (const caso of db.cases || []) {
+    const ordenes = caso.judicialOrdersDetail || caso.datosResolucion?.ordenesJudicialesDetalle || [];
+
+    for (const orden of ordenes) {
+      if (normalizarNumeroOrden(orden.number || orden.numero || orden.orderNumber) === numeroNormalizado) {
+        return {
+          type: orden.type || orden.tipo || orden.orderType || "Orden judicial",
+          number: orden.number || orden.numero || orden.orderNumber || numero,
+          division: caso.divisionResolvio || caso.division || caso.pointName || caso.pointCode || "No especificada",
+          fecha: caso.fechaResolucion || caso.createdAt?.slice(0, 10) || caso.incidentDate || "No especificada"
+        };
+      }
+    }
+  }
+
+  return null;
+}
+    
+   function agregarOrdenCasoResuelto() {
+  const order = {
+    type: el("resolvedOrderType")?.value || "",
+    number: el("resolvedOrderNumber")?.value.trim() || "",
+    issueDate: el("resolvedOrderIssueDate")?.value || "",
+    executionDate: el("resolvedOrderExecutionDate")?.value || "",
+    court: el("resolvedOrderCourt")?.value.trim() || "",
+    authority: el("resolvedOrderAuthority")?.value.trim() || "",
+    result: el("resolvedOrderResult")?.value || "",
+    observations: el("resolvedOrderObservations")?.value.trim() || ""
+  };
+
+  if (!order.type && !order.number && !order.issueDate && !order.executionDate && !order.court && !order.authority && !order.result && !order.observations) {
+    alert("Debe completar al menos un dato de la orden judicial.");
+    return;
+  }
+
+  if (order.number) {
+    const ordenRegistrada = buscarOrdenRegistradaPorNumero(order.number);
+
+    if (ordenRegistrada) {
+      alert(
+        `${ordenRegistrada.type} ya registrada.\n\n` +
+        `Número de orden: ${ordenRegistrada.number}\n` +
+        `División que hizo el registro: ${ordenRegistrada.division}\n` +
+        `Fecha de registro: ${ordenRegistrada.fecha}`
+      );
+      return;
+    }
+  }
+
+  currentResolvedOrders.push(order);
+  limpiarCamposOrdenCasoResuelto();
+  renderResolvedOrders();
+}
 
     function eliminarOrdenCasoResuelto(index) {
       currentResolvedOrders.splice(index, 1);
