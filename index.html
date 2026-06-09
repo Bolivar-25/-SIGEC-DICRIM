@@ -19550,8 +19550,17 @@ sexo_imputado: caso.accusedSex || "",
 nacionalidad_imputado: caso.accusedNationality || "",
 ocupacion_imputado: caso.accusedOccupation || "",
 
-arma_ocupada: caso.seizedWeapon || "",
+arma_ocupada:
+  caso.seizedWeapon ||
+  caso.datosResolucion?.armasOcupadas ||
+  "",
 vehiculo_ocupado_recuperado: caso.seizedVehicle || caso.recoveredVehicle || "",
+    condicion_vehiculo: Array.isArray(caso.seizedVehiclesDetail) && caso.seizedVehiclesDetail.length
+  ? caso.seizedVehiclesDetail
+      .map(v => v.condition || "")
+      .filter(Boolean)
+      .join(", ")
+  : "",
 condicion_vehiculo: Array.isArray(caso.seizedVehiclesDetail) && caso.seizedVehiclesDetail.length
   ? caso.seizedVehiclesDetail
       .map(v => v.condition || v.condicion || "")
@@ -19571,6 +19580,13 @@ propiedad_sustraida: Array.isArray(caso.stolenProperties) && caso.stolenProperti
       caso.stolenFirearmQuantity ? `Cantidad arma: ${caso.stolenFirearmQuantity}` : ""
     ].filter(Boolean).join(" | "),
 ordenes_judiciales_ejecutadas: Number(
+  tipo_orden_judicial: Array.isArray(caso.judicialOrdersDetail) && caso.judicialOrdersDetail.length
+  ? caso.judicialOrdersDetail.map(o => o.type || o.tipo || "").filter(Boolean).join(", ")
+  : "",
+
+numero_orden_judicial: Array.isArray(caso.judicialOrdersDetail) && caso.judicialOrdersDetail.length
+  ? caso.judicialOrdersDetail.map(o => o.number || o.numero || "").filter(Boolean).join(", ")
+  : "",
   tipo_orden_judicial:
   numero_orden_judicial:
   caso.courtOrderNumber ||
@@ -19629,6 +19645,13 @@ propiedad_recuperada: Array.isArray(caso.recoveredProperties) && caso.recoveredP
 }
   
 console.log("PROPIEDAD SUSTRAIDA:", payload.propiedad_sustraida);
+
+console.log("ARMA OCUPADA:", payload.arma_ocupada);
+console.log("NOMBRE IMPUTADO:", payload.nombre_imputado);
+console.log("TIPO ORDEN:", payload.tipo_orden_judicial);
+console.log("NUMERO ORDEN:", payload.numero_orden_judicial);
+console.log("VEHICULO:", payload.vehiculo_ocupado_recuperado);
+console.log("CONDICION VEHICULO:", payload.condicion_vehiculo);
   
   console.log("PAYLOAD CASO A SUPABASE:", payload);
 
