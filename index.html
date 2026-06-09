@@ -19637,18 +19637,10 @@ dinero_ocupado: Number(caso.dineroEfectivo?.amount || caso.dineroEfectivo?.monto
 moneda_dinero_ocupado: caso.dineroEfectivo?.currency || caso.dineroEfectivo?.moneda || "DOP",
 dinero_ocupado_detalle: "",
 
-propiedad_recuperada: Array.isArray(caso.recoveredProperties) && caso.recoveredProperties.length
+propiedad_recuperada: Array.isArray(caso.recoveredProperties) &&
+                      caso.recoveredProperties.length
   ? caso.recoveredProperties
-      .map(p => [
-        p.descripcion ||
-        p.description ||
-        p.property ||
-        p.name ||
-        p.nombre ||
-        "",
-        p.quantity ? `Cantidad: ${p.quantity}` : "",
-        p.moneyAmount ? `Monto: ${p.moneyAmount}` : ""
-      ].filter(Boolean).join(" | "))
+      .map(p => p.property || "")
       .filter(Boolean)
       .join("; ")
   : caso.recoveredProperty || "",
