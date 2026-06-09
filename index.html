@@ -10616,7 +10616,7 @@
       return generateCaseNumber(point);
     }
 
- function casos_validarDuplicidadResuelto(data) {
+function casos_validarDuplicidadResuelto(data) {
   const possible = db.cases.filter(c => {
     if (data.caseNumber && c.caseNumber === data.caseNumber) return true;
 
@@ -10625,12 +10625,12 @@
       c.victimCedula &&
       cleanCompare(c.victimCedula) === cleanCompare(data.victimCedula);
 
-    const sameCaseNarrative =
+    const sameNarrative =
       data.caseNarrative &&
       c.caseNarrative &&
       cleanCompare(c.caseNarrative) === cleanCompare(data.caseNarrative);
 
-    return sameCedula && sameCaseNarrative;
+    return sameCedula && sameNarrative;
   });
 
   if (!possible.length) return true;
