@@ -10616,22 +10616,36 @@
       return generateCaseNumber(point);
     }
 
-    function casos_validarDuplicidadResuelto(data) {
-      const possible = db.cases.filter(c => {
-        if (data.caseNumber && c.caseNumber === data.caseNumber) return true;
-        const sameCedula = data.victimCedula && c.victimCedula && cleanCompare(c.victimCedula) === cleanCompare(data.victimCedula);
-        const sameName = data.victimName && c.victimName && cleanCompare(c.victimName) === cleanCompare(data.victimName);
-        const sameFacts = sameName && c.incidentDate === data.incidentDate && c.crimeType === data.crimeType && (c.section === data.section || c.incidentSector === data.incidentSector);
-        return sameCedula || sameFacts;
-      });
-      if (!possible.length) return true;
-      const detail = possible.map(c => `${c.caseNumber} - ${c.victimName || "sin víctima"} - ${c.crimeType || "sin delito"}`).join("\\n");
-      if (!isAdminGeneral()) {
-        alert(`Posible duplicado detectado. Solicite revisión del administrador:\\n${detail}`);
-        return false;
-      }
-      return confirm(`Posible duplicado detectado:\\n${detail}\\n\\n¿Desea guardar de todos modos?`);
-    }
+ function casos_validarDuplicidadResuelto(data) {
+  const possible = db.cases.filter(c => {
+    if (data.caseNumber && c.caseNumber === data.caseNumber) return true;
+
+    const sameCedula =
+      data.victimCedula &&
+      c.victimCedula &&
+      cleanCompare(c.victimCedula) === cleanCompare(data.victimCedula);
+
+    const sameCaseNarrative =
+      data.caseNarrative &&
+      c.caseNarrative &&
+      cleanCompare(c.caseNarrative) === cleanCompare(data.caseNarrative);
+
+    return sameCedula && sameCaseNarrative;
+  });
+
+  if (!possible.length) return true;
+
+  const detail = possible
+    .map(c => `${c.caseNumber} - ${c.victimName || "sin víctima"} - ${c.crimeType || "sin delito"}`)
+    .join("\n");
+
+  if (!isAdminGeneral()) {
+    alert(`Posible duplicado detectado. Solicite revisión del administrador:\n${detail}`);
+    return false;
+  }
+
+  return confirm(`Posible duplicado detectado:\n${detail}\n\n¿Desea guardar de todos modos?`);
+}
 
     function casos_crearCasoResueltoSinDenuncia(data) {
       if (!casos_validarDuplicidadResuelto(data)) return;
