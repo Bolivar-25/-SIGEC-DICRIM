@@ -19561,12 +19561,7 @@ vehiculo_ocupado_recuperado: caso.seizedVehicle || caso.recoveredVehicle || "",
       .filter(Boolean)
       .join(", ")
   : "",
-condicion_vehiculo: Array.isArray(caso.seizedVehiclesDetail) && caso.seizedVehiclesDetail.length
-  ? caso.seizedVehiclesDetail
-      .map(v => v.condition || v.condicion || "")
-      .filter(Boolean)
-      .join(", ")
-  : "",
+
 propiedad_sustraida: Array.isArray(caso.stolenProperties) && caso.stolenProperties.length
   ? caso.stolenProperties
       .map(p => p.property || p.description || p.descripcion || p.name || p.nombre || JSON.stringify(p))
@@ -19579,28 +19574,28 @@ propiedad_sustraida: Array.isArray(caso.stolenProperties) && caso.stolenProperti
       caso.stolenFirearmType ? `Arma: ${caso.stolenFirearmType}` : "",
       caso.stolenFirearmQuantity ? `Cantidad arma: ${caso.stolenFirearmQuantity}` : ""
     ].filter(Boolean).join(" | "),
-ordenes_judiciales_ejecutadas: Number(
-  tipo_orden_judicial: Array.isArray(caso.judicialOrdersDetail) && caso.judicialOrdersDetail.length
-  ? caso.judicialOrdersDetail.map(o => o.type || o.tipo || "").filter(Boolean).join(", ")
-  : "",
 
-numero_orden_judicial: Array.isArray(caso.judicialOrdersDetail) && caso.judicialOrdersDetail.length
-  ? caso.judicialOrdersDetail.map(o => o.number || o.numero || "").filter(Boolean).join(", ")
-  : "",
-  tipo_orden_judicial:
-  numero_orden_judicial:
-  caso.courtOrderNumber ||
-  caso.datosResolucion?.numeroOrdenJudicial ||
-  "",
-  caso.courtOrder ||
-  caso.datosResolucion?.numeroOrdenJudicial ||
-  "",
+  ordenes_judiciales_ejecutadas: Number(
   caso.executedOrders ||
   caso.ordenesJudicialesEjecutadas ||
   caso.judicialOrdersDetail?.length ||
   caso.datosResolucion?.ordenesJudicialesEjecutadas ||
   0
 ) || 0,
+
+tipo_orden_judicial: Array.isArray(caso.judicialOrdersDetail) && caso.judicialOrdersDetail.length
+  ? caso.judicialOrdersDetail
+      .map(o => o.type || o.tipo || o.orderType || "")
+      .filter(Boolean)
+      .join(", ")
+  : caso.courtOrder || "",
+
+numero_orden_judicial: Array.isArray(caso.judicialOrdersDetail) && caso.judicialOrdersDetail.length
+  ? caso.judicialOrdersDetail
+      .map(o => o.number || o.numero || o.orderNumber || "")
+      .filter(Boolean)
+      .join(", ")
+  : caso.courtOrderNumber || "",
     
 maquinas_tragamonedas_ocupadas: Number(caso.tragamonedas?.quantity || caso.tragamonedas?.cantidad || 0),
 
