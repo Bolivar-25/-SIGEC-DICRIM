@@ -19552,8 +19552,16 @@ ocupacion_imputado: caso.accusedOccupation || "",
 
 arma_ocupada:
   caso.seizedWeapon ||
-  caso.datosResolucion?.armasOcupadas ||
+  caso.seizedWeaponsDetail?.map(a => a.type || a.tipo || a.name || "").filter(Boolean).join(", ") ||
   "",
+
+condicion_arma_ocupada: Array.isArray(caso.seizedWeaponsDetail) && caso.seizedWeaponsDetail.length
+  ? caso.seizedWeaponsDetail
+      .map(a => a.condition || a.condicion || a.status || a.estado || "")
+      .filter(Boolean)
+      .join(", ")
+  : "",
+    
 vehiculo_ocupado_recuperado: caso.seizedVehicle || caso.recoveredVehicle || "",
 
 condicion_vehiculo: Array.isArray(caso.seizedVehiclesDetail) && caso.seizedVehiclesDetail.length
@@ -19597,6 +19605,15 @@ numero_orden_judicial: Array.isArray(caso.judicialOrdersDetail) && caso.judicial
       .filter(Boolean)
       .join(", ")
   : caso.courtOrderNumber || "",
+
+    maquinas_tragamonedas_ocupadas: Number(
+  caso.tragamonedas?.quantity ||
+  caso.tragamonedas?.cantidad ||
+  caso.tragamonedas?.amount ||
+  caso.tragamonedas?.total ||
+  caso.tragamonedas?.items?.length ||
+  0
+) || 0,
 
 dinero_ocupado: Number(caso.dineroEfectivo?.amount || caso.dineroEfectivo?.monto || 0),
 moneda_dinero_ocupado: caso.dineroEfectivo?.currency || caso.dineroEfectivo?.moneda || "DOP",
@@ -19645,6 +19662,7 @@ console.log("NOMBRE IMPUTADO:", payload.nombre_imputado);
 console.log("TIPO ORDEN:", payload.tipo_orden_judicial);
 console.log("NUMERO ORDEN:", payload.numero_orden_judicial);
 console.log("VEHICULO:", payload.vehiculo_ocupado_recuperado);
+console.log("MAQUINAS TRAGAMONEDAS:", payload.maquinas_tragamonedas_ocupadas);
 console.log("CONDICION VEHICULO:", payload.condicion_vehiculo);
   
   console.log("PAYLOAD CASO A SUPABASE:", payload);
