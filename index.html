@@ -10476,16 +10476,19 @@
 
     function saveResolvedOnly(event) {
       event?.preventDefault();
+      console.log("ENTRÓ A saveResolvedOnly");
       const data = collectResolvedCaseForm();
       if (!data || !periodo_capturaPermitida("resueltos", data)) return;
       if (!permisos_validarModulo("resueltos", "crear", data)) return alert("Acceso restringido por el Administrador General.");
       if (!data || !validateResolvedCase(data)) return;
       if (el("unreportedResolvedCaseCheck")?.checked) {
-        casos_crearCasoResueltoSinDenuncia(data);
+      console.log("FLUJO: caso resuelto sin denuncia previa");
+      casos_crearCasoResueltoSinDenuncia(data);
       } else {
-        casos_resolverCasoExistente(data);
-      }
-    }
+      console.log("FLUJO: caso resuelto con denuncia previa");
+      casos_resolverCasoExistente(data);
+     }
+     }
 
     function casos_buscarPorNumeroCaso(numero) {
       const value = String(numero || "").trim().toLowerCase();
@@ -17200,9 +17203,9 @@ syncLaborSupabase(newLabor);
           updatedBy: currentUser().username
         };
         db.labors.push(labor);
-syncLaborSupabase(labor);
-logAction("Labor creada", labor.laborCode);
-labores_procesarDenunciaDetectada(labor);
+       syncLaborSupabase(labor);
+      logAction("Labor creada", labor.laborCode);
+      labores_procesarDenunciaDetectada(labor);
       }
       saveDb();
       limpiarDatosDespuesDeGuardar("labores");
