@@ -10663,6 +10663,7 @@
         }]
       };
       db.cases.push(newCase);
+      syncCaseSupabase(newCase);
       logAction("Caso resuelto sin denuncia previa", newCase.caseNumber);
       guardarLocal();
       limpiarDatosDespuesDeGuardar("resueltos");
