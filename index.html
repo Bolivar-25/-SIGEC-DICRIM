@@ -19552,12 +19552,12 @@ ocupacion_imputado: caso.accusedOccupation || "",
 
 arma_ocupada: Array.isArray(caso.seizedWeaponsDetail) && caso.seizedWeaponsDetail.length
   ? caso.seizedWeaponsDetail
-      .map(a => a.type || a.tipo || a.weapon || a.arma || a.name || "")
+  .map(a => a.type || a.tipo || a.weapon || a.arma || a.name || a.nombre || a.descripcion || a.description || "")
       .filter(Boolean)
       .join(", ")
   : (caso.seizedWeapon && caso.seizedWeapon !== "Ninguna" ? caso.seizedWeapon : ""),
 
-condicion_arma_ocupada: Array.isArray(caso.seizedWeaponsDetail) && caso.seizedWeaponsDetail.length
+    condicion_arma_ocupada: Array.isArray(caso.seizedWeaponsDetail) && caso.seizedWeaponsDetail.length
   ? caso.seizedWeaponsDetail
       .map(a => a.condition || a.condicion || a.status || a.estado || "")
       .filter(Boolean)
@@ -19688,6 +19688,10 @@ console.log("CONDICION ARMA FINAL:", payload.condicion_arma_ocupada);
 console.log("TRAGAMONEDAS FINAL:", payload.maquinas_tragamonedas_ocupadas);
 console.log("DETALLE ARMAS:", caso.seizedWeaponsDetail);
 console.log("TRAGAMONEDAS OBJETO:", caso.tragamonedas);
+
+  console.log("DETALLE ARMAS:", caso.seizedWeaponsDetail);
+console.log("ARMA FINAL:", payload.arma_ocupada);
+console.log("CONDICION ARMA FINAL:", payload.condicion_arma_ocupada);
   
   console.log("PAYLOAD CASO A SUPABASE:", payload);
 
