@@ -19639,16 +19639,20 @@ dinero_ocupado_detalle: "",
 
 propiedad_recuperada: Array.isArray(caso.recoveredProperties) && caso.recoveredProperties.length
   ? caso.recoveredProperties
-     .map(p => [
-  p.descripcion ||
-  p.description ||
-  p.property ||
-  p.name ||
-  "",
-  p.quantity ? `Cantidad: ${p.quantity}` : "",
-  p.moneyAmount ? `Monto: ${p.moneyAmount}` : ""
-].filter(Boolean).join(" | "))
+      .map(p => [
+        p.descripcion ||
+        p.description ||
+        p.property ||
+        p.name ||
+        p.nombre ||
+        "",
+        p.quantity ? `Cantidad: ${p.quantity}` : "",
+        p.moneyAmount ? `Monto: ${p.moneyAmount}` : ""
+      ].filter(Boolean).join(" | "))
+      .filter(Boolean)
+      .join("; ")
   : caso.recoveredProperty || "",
+    
     narrativa: caso.caseNarrative || caso.narrative || ""
   };
 
