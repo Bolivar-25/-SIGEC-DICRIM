@@ -9639,25 +9639,84 @@
       ["resolvedWeaponType","resolvedWeaponBrand","resolvedWeaponModel","resolvedWeaponCaliber","resolvedWeaponNumber","resolvedWeaponCondition","resolvedWeaponObservations"].forEach(id => { if (el(id)) el(id).value = ""; });
     }
 
-    function agregarArmaCasoResuelto() {
-      const weapon = {
-        type: el("resolvedWeaponType")?.value || "",
-        brand: el("resolvedWeaponBrand")?.value.trim() || "",
-        model: el("resolvedWeaponModel")?.value.trim() || "",
-        caliber: el("resolvedWeaponCaliber")?.value.trim() || "",
-        number: el("resolvedWeaponNumber")?.value.trim() || "",
-        condition: el("resolvedWeaponCondition")?.value || "",
-        observations: el("resolvedWeaponObservations")?.value.trim() || ""
-      };
-      if (!weapon.type && !weapon.brand && !weapon.model && !weapon.caliber && !weapon.number && !weapon.condition && !weapon.observations) {
-        alert("Debe completar al menos un dato del arma ocupada.");
-        return;
-      }
-      currentResolvedWeapons.push(weapon);
-      limpiarCamposArmaCasoResuelto();
-      renderResolvedWeapons();
-    }
+    function normalizarNumeroArma(valor) {
+  return String(valor || "")
+    .trim()
+    .toUpperCase()
+    .replace(/\s+/g, "")
+    .replace(/[-_]/g, "");
+}
 
+function buscarArmaRegistradaPorNumero(numero) {
+  const numeroNormalizado = normalizarNumeroArma(numero);
+  if (!numeroNormalizado) return null;
+
+  const armasActuales = currentResolvedWeapons || [];
+
+  for (const arma of armasActuales) {
+    if (normalizarNumeroArma(arma.number) === numeroNormalizado) {
+      return {
+        type: arma.type || "No especificado",
+        number: arma.number || numero,
+        division: currentPoint()?.division || "Formulario actual",
+        fecha: new Date().toISOString().slice(0, 10)
+      };
+    }
+  }
+
+  for (const caso of db.cases || []) {
+    const armas = caso.seizedWeaponsDetail || caso.armasOcupadasDetalle || caso.datosResolucion?.armasOcupadasDetalle || [];
+
+    for (const arma of armas) {
+      if (normalizarNumeroArma(arma.number || arma.numero || arma.serial) === numeroNormalizado) {
+        return {
+          type: arma.type || arma.tipo || arma.weapon || arma.arma || "No especificado",
+          number: arma.number || arma.numero || arma.serial || numero,
+          division: caso.divisionResolvio || caso.division || caso.pointName || caso.pointCode || "No especificada",
+          fecha: caso.fechaResolucion || caso.createdAt?.slice(0, 10) || caso.fecha_hecho || caso.incidentDate || "No especificada"
+        };
+      }
+    }
+  }
+
+  return null;
+}
+    
+    function agregarArmaCasoResuelto() {
+  const weapon = {
+    type: el("resolvedWeaponType")?.value || "",
+    brand: el("resolvedWeaponBrand")?.value.trim() || "",
+    model: el("resolvedWeaponModel")?.value.trim() || "",
+    caliber: el("resolvedWeaponCaliber")?.value.trim() || "",
+    number: el("resolvedWeaponNumber")?.value.trim() || "",
+    condition: el("resolvedWeaponCondition")?.value || "",
+    observations: el("resolvedWeaponObservations")?.value.trim() || ""
+  };
+
+  if (!weapon.type && !weapon.brand && !weapon.model && !weapon.caliber && !weapon.number && !weapon.condition && !weapon.observations) {
+    alert("Debe completar al menos un dato del arma ocupada.");
+    return;
+  }
+
+  if (weapon.number) {
+    const armaRegistrada = buscarArmaRegistradaPorNumero(weapon.number);
+
+    if (armaRegistrada) {
+      alert(
+        `Esta arma ya fue registrada.\n\n` +
+        `Tipo de arma: ${armaRegistrada.type}\n` +
+        `Numeración: ${armaRegistrada.number}\n` +
+        `División donde fue registrada: ${armaRegistrada.division}\n` +
+        `Fecha de registro: ${armaRegistrada.fecha}`
+      );
+      return;
+    }
+  }
+
+  currentResolvedWeapons.push(weapon);
+  limpiarCamposArmaCasoResuelto();
+  renderResolvedWeapons();
+}
     function eliminarArmaCasoResuelto(index) {
       currentResolvedWeapons.splice(index, 1);
       renderResolvedWeapons();
