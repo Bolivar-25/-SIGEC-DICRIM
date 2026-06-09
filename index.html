@@ -10349,6 +10349,19 @@
         methodUsed: el("methodUsed").value || existing.methodUsed || "",
         weaponUsed: el("weaponUsed").value || existing.weaponUsed || "",
         status: "Resuelto",
+        victimName: firstVictim.name || existing.victimName || "",
+        victimCedula: firstVictim.cedula || existing.victimCedula || "",
+        victimAge: firstVictim.age || existing.victimAge || "",
+        victimSex: firstVictim.sex || existing.victimSex || "",
+        victimNationality: firstVictim.nationality || existing.victimNationality || "",
+        victimOccupation: firstVictim.occupation || existing.victimOccupation || "",
+        victimAddress: firstVictim.address || existing.victimAddress || "",
+
+         methodUsed: el("methodUsed")?.value || existing.methodUsed || "",
+        weaponUsed: el("weaponUsed")?.value || existing.weaponUsed || "",
+
+        latitud: existing.latitud || existing.latitude || "",
+        longitud: existing.longitud || existing.longitude || "",
         accusedCedula: firstAccused.cedula || "",
         accusedName: firstAccused.name || "",
         accusedAlias: firstAccused.alias || "",
@@ -10588,6 +10601,7 @@
       };
       casos_actualizarStatusResuelto(updated, data);
       db.cases[index] = updated;
+      syncCaseSupabase(updated);
       logAction("Caso resuelto derivado de denuncia", updated.caseNumber);
       guardarLocal();
       limpiarDatosDespuesDeGuardar("resueltos");
