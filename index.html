@@ -19499,12 +19499,14 @@ console.log("Supabase conectado:", !!window.supabaseClient);
 async function syncCaseSupabase(caso) {
   if (!window.supabaseClient || !caso) return;
   console.log("VERSION CASOS NUEVOS CAMPOS ACTIVA");
-console.log("CASO COMPLETO:", caso);
+
+  console.log("CASO COMPLETO:", caso);
 
 console.log("COURT ORDER:", caso.courtOrder);
 console.log("JUDICIAL ORDERS:", caso.judicialOrdersDetail);
 console.log("EXECUTED ORDERS:", caso.executedOrders);
 console.log("DATOS RESOLUCION:", caso.datosResolucion);
+console.log("VEHICULOS DETAIL:", caso.seizedVehiclesDetail);
 
   const payload = {
     numero_caso: caso.caseNumber || caso.id || "",
@@ -19541,6 +19543,7 @@ sexo_victima: caso.victimSex || "",
 nacionalidad_victima: caso.victimNationality || "",
 ocupacion_victima: caso.victimOccupation || "",
 
+nombre_imputado: caso.accusedName || "",
 alias_imputado: caso.accusedAlias || "",
 edad_imputado: Number(caso.accusedAge || 0),
 sexo_imputado: caso.accusedSex || "",
@@ -19549,6 +19552,12 @@ ocupacion_imputado: caso.accusedOccupation || "",
 
 arma_ocupada: caso.seizedWeapon || "",
 vehiculo_ocupado_recuperado: caso.seizedVehicle || caso.recoveredVehicle || "",
+condicion_vehiculo: Array.isArray(caso.seizedVehiclesDetail) && caso.seizedVehiclesDetail.length
+  ? caso.seizedVehiclesDetail
+      .map(v => v.condition || v.condicion || "")
+      .filter(Boolean)
+      .join(", ")
+  : "",
 propiedad_sustraida: Array.isArray(caso.stolenProperties) && caso.stolenProperties.length
   ? caso.stolenProperties
       .map(p => p.property || p.description || p.descripcion || p.name || p.nombre || JSON.stringify(p))
@@ -19562,6 +19571,14 @@ propiedad_sustraida: Array.isArray(caso.stolenProperties) && caso.stolenProperti
       caso.stolenFirearmQuantity ? `Cantidad arma: ${caso.stolenFirearmQuantity}` : ""
     ].filter(Boolean).join(" | "),
 ordenes_judiciales_ejecutadas: Number(
+  tipo_orden_judicial:
+  numero_orden_judicial:
+  caso.courtOrderNumber ||
+  caso.datosResolucion?.numeroOrdenJudicial ||
+  "",
+  caso.courtOrder ||
+  caso.datosResolucion?.numeroOrdenJudicial ||
+  "",
   caso.executedOrders ||
   caso.ordenesJudicialesEjecutadas ||
   caso.judicialOrdersDetail?.length ||
