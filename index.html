@@ -19271,6 +19271,56 @@ logAction("Operativo creado", operative.operativeCode);
       XLSX.writeFile(wb, `tasas_criminalidad_${fileStamp()}.xlsx`);
     }
 
+    /* ===== ALERTAS PERSONALIZADAS ===== */
+
+(function activarAlertasPersonalizadas() {
+
+    const alertaOriginal = window.alert;
+
+    window.alert = function(mensaje) {
+
+        const overlay = document.createElement("div");
+
+        overlay.innerHTML = `
+        <div style="
+            position:fixed;
+            inset:0;
+            background:rgba(0,0,0,.6);
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            z-index:999999;
+        ">
+            <div style="
+                background:#fff;
+                width:550px;
+                max-width:90%;
+                border-radius:12px;
+                padding:20px;
+                box-shadow:0 10px 30px rgba(0,0,0,.3);
+            ">
+                <h3>Aviso del sistema</h3>
+
+                <div style="margin:15px 0">
+                    ${mensaje}
+                </div>
+
+                <button id="btnCerrarAlerta">
+                    Aceptar
+                </button>
+            </div>
+        </div>
+        `;
+
+        document.body.appendChild(overlay);
+
+        overlay.querySelector("#btnCerrarAlerta")
+            .addEventListener("click", () => overlay.remove());
+    };
+
+})();
+
+
     document.addEventListener("DOMContentLoaded", () => {
       installBackToTopButtons();
       instalarOptimizadorMedios();
