@@ -2784,6 +2784,16 @@
                     <label for="stolenMoneyAmount" class="required">Cantidad de dinero sustraído</label>
                     <input id="stolenMoneyAmount" type="number" min="0" step="0.01" placeholder="Monto" />
                   </div>
+                  <div id="stolenMoneyCurrencyWrap" class="hidden">
+                    <label for="stolenMoneyCurrency" class="required">Moneda del dinero sustraído</label>
+                    <select id="stolenMoneyCurrency">
+                      <option value="">Seleccione</option>
+                      <option value="DOP">DOP$</option>
+                      <option value="USD">USD$</option>
+                      <option value="EUR">EUR$</option>
+                      <option value="Otra">Otros</option>
+                    </select>
+                  </div>
                   <div id="stolenFirearmTypeWrap" class="hidden">
                     <label for="stolenFirearmType" class="required">Tipo de arma sustraída</label>
                     <select id="stolenFirearmType"></select>
@@ -5535,6 +5545,7 @@
       ["stolenProperty","Propiedad sustraída"],
       ["stolenPropertyQuantity","Cantidad de propiedad sustraída"],
       ["stolenMoneyAmount","Cantidad de dinero sustraído"],
+      ["stolenMoneyCurrency","Moneda del dinero sustraído"],
       ["stolenFirearmType","Tipo de arma sustraída"],
       ["stolenFirearmQuantity","Cantidad de armas sustraídas"],
       ["stolenProperties","Propiedades sustraídas"],
@@ -9970,7 +9981,7 @@ function buscarOrdenRegistradaPorNumero(numero) {
     }
 
     function clearComplaintFields() {
-      ["victimName","victimCedula","victimNationality","victimSex","victimAge","victimAddress","victimOccupation","incidentProvince","incidentMunicipality","incidentDate","incidentAddress","incidentSector","latitud","longitud","crimeType","incidentTime","stolenProperty","stolenPropertyQuantity","stolenMoneyAmount","stolenFirearmType","stolenFirearmQuantity","methodUsed","weaponUsed","status","complaintNarrative"].forEach(id => {
+      ["victimName","victimCedula","victimNationality","victimSex","victimAge","victimAddress","victimOccupation","incidentProvince","incidentMunicipality","incidentDate","incidentAddress","incidentSector","latitud","longitud","crimeType","incidentTime","stolenProperty","stolenPropertyQuantity","stolenMoneyAmount","stolenMoneyCurrency","stolenFirearmType","stolenFirearmQuantity","methodUsed","weaponUsed","status","complaintNarrative"].forEach(id => {
         if (el(id)) el(id).value = "";
       });
       currentComplaintVictims = [];
@@ -9998,10 +10009,12 @@ function buscarOrdenRegistradaPorNumero(numero) {
       };
       toggleWrap("stolenPropertyQuantityWrap", isGenericProperty);
       toggleWrap("stolenMoneyAmountWrap", isMoney);
+      toggleWrap("stolenMoneyCurrencyWrap", isMoney);
       toggleWrap("stolenFirearmTypeWrap", isFirearm);
       toggleWrap("stolenFirearmQuantityWrap", isFirearm);
       if (!isGenericProperty && el("stolenPropertyQuantity")) el("stolenPropertyQuantity").value = "";
       if (!isMoney && el("stolenMoneyAmount")) el("stolenMoneyAmount").value = "";
+      if (!isMoney && el("stolenMoneyCurrency")) el("stolenMoneyCurrency").value = "";
       if (!isFirearm) {
         if (el("stolenFirearmType")) el("stolenFirearmType").value = "";
         if (el("stolenFirearmQuantity")) el("stolenFirearmQuantity").value = "";
@@ -10014,10 +10027,14 @@ function buscarOrdenRegistradaPorNumero(numero) {
         property,
         quantity: "",
         moneyAmount: "",
+        moneyCurrency: "",
         firearmType: "",
         firearmQuantity: ""
       };
-      if (property === "Dinero en efectivo") item.moneyAmount = el("stolenMoneyAmount")?.value || "";
+      if (property === "Dinero en efectivo") {
+        item.moneyAmount = el("stolenMoneyAmount")?.value || "";
+        item.moneyCurrency = el("stolenMoneyCurrency")?.value || "";
+      }
       else if (property === "Arma de fuego") {
         item.firearmType = el("stolenFirearmType")?.value || "";
         item.firearmQuantity = el("stolenFirearmQuantity")?.value || "";
@@ -10039,6 +10056,10 @@ function buscarOrdenRegistradaPorNumero(numero) {
           if (!silent) alert("Debe indicar la cantidad de dinero sustraído.");
           return false;
         }
+        if (!item.moneyCurrency) {
+          if (!silent) alert("Debe seleccionar la moneda del dinero sustraído.");
+          return false;
+        }
         return true;
       }
       if (item.property === "Arma de fuego") {
@@ -10058,14 +10079,14 @@ function buscarOrdenRegistradaPorNumero(numero) {
 
     function stolenPropertySummary(item = {}) {
       if (!item.property) return "";
-      if (item.property === "Dinero en efectivo") return `${item.property}: ${item.moneyAmount || 0}`;
+      if (item.property === "Dinero en efectivo") return `${item.property}: ${item.moneyAmount || 0}${item.moneyCurrency ? ` ${item.moneyCurrency}` : ""}`;
       if (item.property === "Arma de fuego") return `${item.property}: ${item.firearmType || "Tipo no indicado"} (${item.firearmQuantity || 0})`;
       if (isStolenPersonalDocuments(item.property)) return item.property;
       return `${item.property}: ${item.quantity || 0}`;
     }
 
     function clearStolenPropertyFields() {
-      ["stolenProperty","stolenPropertyQuantity","stolenMoneyAmount","stolenFirearmType","stolenFirearmQuantity"].forEach(id => {
+      ["stolenProperty","stolenPropertyQuantity","stolenMoneyAmount","stolenMoneyCurrency","stolenFirearmType","stolenFirearmQuantity"].forEach(id => {
         if (el(id)) el(id).value = "";
       });
       updateStolenPropertyDetails();
@@ -10105,7 +10126,7 @@ function buscarOrdenRegistradaPorNumero(numero) {
       const list = deepClone(currentStolenProperties || []);
       const pending = stolenPropertyFromFields();
       if (stolenPropertyHasData(pending)) {
-        const key = item => [item.property, item.quantity, item.moneyAmount, item.firearmType, item.firearmQuantity].map(v => String(v || "").trim().toLowerCase()).join("|");
+        const key = item => [item.property, item.quantity, item.moneyAmount, item.moneyCurrency, item.firearmType, item.firearmQuantity].map(v => String(v || "").trim().toLowerCase()).join("|");
         if (!list.some(item => key(item) === key(pending))) list.push(pending);
       }
       return list;
@@ -10274,6 +10295,7 @@ function buscarOrdenRegistradaPorNumero(numero) {
         stolenProperty: firstStolenProperty.property || "",
         stolenPropertyQuantity: firstStolenProperty.quantity || "",
         stolenMoneyAmount: firstStolenProperty.moneyAmount || "",
+        stolenMoneyCurrency: firstStolenProperty.moneyCurrency || "",
         stolenFirearmType: firstStolenProperty.firearmType || "",
         stolenFirearmQuantity: firstStolenProperty.firearmQuantity || "",
         stolenProperties,
@@ -10406,6 +10428,7 @@ function buscarOrdenRegistradaPorNumero(numero) {
         stolenProperty: data.stolenProperty,
         stolenPropertyQuantity: data.stolenPropertyQuantity,
         stolenMoneyAmount: data.stolenMoneyAmount,
+        stolenMoneyCurrency: data.stolenMoneyCurrency,
         stolenFirearmType: data.stolenFirearmType,
         stolenFirearmQuantity: data.stolenFirearmQuantity,
         stolenProperties: deepClone(data.stolenProperties || []),
@@ -10456,6 +10479,7 @@ function buscarOrdenRegistradaPorNumero(numero) {
         stolenProperty: firstStolenProperty.property || existing.stolenProperty || "",
         stolenPropertyQuantity: firstStolenProperty.quantity || existing.stolenPropertyQuantity || "",
         stolenMoneyAmount: firstStolenProperty.moneyAmount || existing.stolenMoneyAmount || "",
+        stolenMoneyCurrency: firstStolenProperty.moneyCurrency || existing.stolenMoneyCurrency || "",
         stolenFirearmType: firstStolenProperty.firearmType || existing.stolenFirearmType || "",
         stolenFirearmQuantity: firstStolenProperty.firearmQuantity || existing.stolenFirearmQuantity || "",
         stolenProperties: stolenProperties.length ? stolenProperties : deepClone(existing.stolenProperties || existing.datosDenuncia?.stolenProperties || []),
@@ -11054,6 +11078,7 @@ function casos_validarDuplicidadResuelto(data) {
         stolenProperty: c.stolenProperty,
         stolenPropertyQuantity: c.stolenPropertyQuantity || c.datosDenuncia?.stolenPropertyQuantity || "",
         stolenMoneyAmount: c.stolenMoneyAmount || c.datosDenuncia?.stolenMoneyAmount || "",
+        stolenMoneyCurrency: c.stolenMoneyCurrency || c.datosDenuncia?.stolenMoneyCurrency || "",
         stolenFirearmType: c.stolenFirearmType || c.datosDenuncia?.stolenFirearmType || "",
         stolenFirearmQuantity: c.stolenFirearmQuantity || c.datosDenuncia?.stolenFirearmQuantity || "",
         methodUsed: c.methodUsed,
@@ -19747,8 +19772,8 @@ propiedad_sustraida: Array.isArray(caso.stolenProperties) && caso.stolenProperti
       .join(", ")
   : [
       caso.stolenProperty || "",
-      caso.stolenMoneyAmount ? `Monto: ${caso.stolenMoneyAmount}` : "",
-      caso.stolenMoneyType ? `Moneda: ${caso.stolenMoneyType}` : "",
+      caso.stolenMoneyAmount ? `Monto: ${caso.stolenMoneyAmount}${caso.stolenMoneyCurrency ? ` ${caso.stolenMoneyCurrency}` : ""}` : "",
+      caso.stolenMoneyCurrency ? `Moneda: ${caso.stolenMoneyCurrency}` : "",
       caso.stolenFirearmType ? `Arma: ${caso.stolenFirearmType}` : "",
       caso.stolenFirearmQuantity ? `Cantidad arma: ${caso.stolenFirearmQuantity}` : ""
     ].filter(Boolean).join(" | "),
