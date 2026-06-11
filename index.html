@@ -3089,6 +3089,16 @@
                     <label for="recoveredMoneyAmount" class="required">Cantidad de dinero recuperado</label>
                     <input id="recoveredMoneyAmount" class="resolved-field" type="number" min="0" step="0.01" placeholder="Monto" />
                   </div>
+                  <div id="recoveredMoneyCurrencyWrap" class="hidden">
+                    <label for="recoveredMoneyCurrency" class="required">Moneda</label>
+                    <select id="recoveredMoneyCurrency" class="resolved-field">
+                      <option value="">Seleccione</option>
+                      <option value="DOP">DOP$</option>
+                      <option value="USD">USD$</option>
+                      <option value="EUR">EUR$</option>
+                      <option value="Otra">Otra</option>
+                    </select>
+                  </div>
                   <div>
                     <label>&nbsp;</label>
                     <button id="recoveredPropertyAddBtn" class="btn light resolved-field" type="button">Agregar propiedad recuperada</button>
@@ -5574,6 +5584,7 @@
       ["recoveredProperty","Propiedad recuperada"],
       ["recoveredPropertyQuantity","Cantidad de propiedad recuperada"],
       ["recoveredMoneyAmount","Cantidad de dinero recuperado"],
+      ["recoveredMoneyCurrency","Moneda del dinero recuperado"],
       ["recoveredProperties","Propiedades recuperadas"],
       ["narcotics","Sustancias narcóticas"],
       ["courtOrder","Orden judicial ejecutada"],
@@ -10156,7 +10167,8 @@ function buscarOrdenRegistradaPorNumero(numero) {
 
     function updateRecoveredPropertyDetails() {
       const selected = el("recoveredProperty")?.value || "";
-      const isGenericProperty = !recoveredPropertyIsNone(selected) && !recoveredPropertyIsMoney(selected) && !recoveredPropertyUsesDedicatedBlock(selected);
+      const isMoneyProperty = recoveredPropertyIsMoney(selected);
+      const isGenericProperty = !recoveredPropertyIsNone(selected) && !isMoneyProperty && !recoveredPropertyUsesDedicatedBlock(selected);
       const toggleWrap = (id, show) => {
         const node = el(id);
         if (node) {
@@ -10165,16 +10177,21 @@ function buscarOrdenRegistradaPorNumero(numero) {
         }
       };
       toggleWrap("recoveredPropertyQuantityWrap", isGenericProperty);
-      toggleWrap("recoveredMoneyAmountWrap", false);
+      toggleWrap("recoveredMoneyAmountWrap", isMoneyProperty);
+      toggleWrap("recoveredMoneyCurrencyWrap", isMoneyProperty);
       if (!isGenericProperty && el("recoveredPropertyQuantity")) el("recoveredPropertyQuantity").value = "";
-      if (el("recoveredMoneyAmount")) el("recoveredMoneyAmount").value = "";
+      if (!isMoneyProperty && el("recoveredMoneyAmount")) el("recoveredMoneyAmount").value = "";
+      if (!isMoneyProperty && el("recoveredMoneyCurrency")) el("recoveredMoneyCurrency").value = "";
     }
 
     function recoveredPropertyFromFields() {
       const selected = el("recoveredProperty")?.value || "";
       const property = recoveredPropertyIsNone(selected) ? "" : selected;
-      const item = { property, quantity: "", moneyAmount: "" };
-      if (recoveredPropertyIsMoney(property)) item.moneyAmount = el("recoveredMoneyAmount")?.value || "";
+      const item = { property, quantity: "", moneyAmount: "", moneyCurrency: "" };
+      if (recoveredPropertyIsMoney(property)) {
+        item.moneyAmount = el("recoveredMoneyAmount")?.value || "";
+        item.moneyCurrency = el("recoveredMoneyCurrency")?.value || "";
+      }
       else if (property && !recoveredPropertyUsesDedicatedBlock(property)) item.quantity = el("recoveredPropertyQuantity")?.value || "";
       return item;
     }
@@ -10189,7 +10206,17 @@ function buscarOrdenRegistradaPorNumero(numero) {
         if (!silent) alert("Debe seleccionar la propiedad recuperada.");
         return false;
       }
-      if (recoveredPropertyIsMoney(item.property)) return true;
+      if (recoveredPropertyIsMoney(item.property)) {
+        if (!(Number(item.moneyAmount) > 0)) {
+          if (!silent) alert("Debe indicar la cantidad de dinero recuperado.");
+          return false;
+        }
+        if (!String(item.moneyCurrency || "").trim()) {
+          if (!silent) alert("Debe seleccionar la moneda recuperada.");
+          return false;
+        }
+        return true;
+      }
       if (recoveredPropertyUsesDedicatedBlock(item.property)) return true;
       if (!(Number(item.quantity) > 0)) {
         if (!silent) alert("Debe indicar la cantidad de propiedad recuperada.");
@@ -10200,13 +10227,13 @@ function buscarOrdenRegistradaPorNumero(numero) {
 
     function recoveredPropertySummary(item = {}) {
       if (!item.property || recoveredPropertyIsNone(item.property)) return "";
-      if (recoveredPropertyIsMoney(item.property)) return `${item.property}: ${item.moneyAmount || 0}`;
+      if (recoveredPropertyIsMoney(item.property)) return `${item.property}: ${item.moneyAmount || 0}${item.moneyCurrency ? ` ${item.moneyCurrency}` : ""}`;
       if (recoveredPropertyUsesDedicatedBlock(item.property)) return `${item.property}: se registra en su bloque dedicado`;
       return `${item.property}: ${item.quantity || 0}`;
     }
 
     function clearRecoveredPropertyFields() {
-      ["recoveredProperty","recoveredPropertyQuantity","recoveredMoneyAmount"].forEach(id => {
+      ["recoveredProperty","recoveredPropertyQuantity","recoveredMoneyAmount","recoveredMoneyCurrency"].forEach(id => {
         if (el(id)) el(id).value = "";
       });
       updateRecoveredPropertyDetails();
@@ -10246,7 +10273,7 @@ function buscarOrdenRegistradaPorNumero(numero) {
       const list = deepClone(currentRecoveredProperties || []);
       const pending = recoveredPropertyFromFields();
       if (recoveredPropertyHasData(pending)) {
-        const key = item => [item.property, item.quantity, item.moneyAmount].map(v => String(v || "").trim().toLowerCase()).join("|");
+        const key = item => [item.property, item.quantity, item.moneyAmount, item.moneyCurrency].map(v => String(v || "").trim().toLowerCase()).join("|");
         if (!list.some(item => key(item) === key(pending))) list.push(pending);
       }
       return list;
@@ -10257,7 +10284,11 @@ function buscarOrdenRegistradaPorNumero(numero) {
       if (items.length) return items.every(item => validateRecoveredPropertyItem(item));
       if (!data.recoveredProperty) return true;
       if (recoveredPropertyIsMoney(data.recoveredProperty)) {
-        return true;
+        return validateRecoveredPropertyItem({
+          property: data.recoveredProperty,
+          moneyAmount: data.recoveredMoneyAmount,
+          moneyCurrency: data.recoveredMoneyCurrency
+        });
       }
       if (!recoveredPropertyUsesDedicatedBlock(data.recoveredProperty) && !(Number(data.recoveredPropertyQuantity) > 0)) {
         alert("Debe indicar la cantidad de propiedad recuperada.");
@@ -10524,6 +10555,7 @@ function buscarOrdenRegistradaPorNumero(numero) {
         recoveredProperty: firstRecoveredProperty.property || "",
         recoveredPropertyQuantity: firstRecoveredProperty.quantity || "",
         recoveredMoneyAmount: firstRecoveredProperty.moneyAmount || "",
+        recoveredMoneyCurrency: firstRecoveredProperty.moneyCurrency || "",
         recoveredProperties,
         narcotics: existing.narcotics || "Ninguna",
         courtOrder: el("courtOrder").value || "Ninguna",
@@ -10682,6 +10714,7 @@ function buscarOrdenRegistradaPorNumero(numero) {
         bienesRecuperados: data.recoveredProperty || "",
         cantidadBienesRecuperados: data.recoveredPropertyQuantity || "",
         montoDineroRecuperado: data.recoveredMoneyAmount || "",
+        monedaDineroRecuperado: data.recoveredMoneyCurrency || "",
         propiedadesRecuperadas: deepClone(data.recoveredProperties || []),
         observacionesFinales: "",
         usuarioResolvio: user?.username || "",
@@ -11104,6 +11137,7 @@ function casos_validarDuplicidadResuelto(data) {
         recoveredProperty: c.recoveredProperty || "",
         recoveredPropertyQuantity: c.recoveredPropertyQuantity || resolution.cantidadBienesRecuperados || "",
         recoveredMoneyAmount: c.recoveredMoneyAmount || resolution.montoDineroRecuperado || "",
+        recoveredMoneyCurrency: c.recoveredMoneyCurrency || resolution.monedaDineroRecuperado || "",
         courtOrder: c.courtOrder || "Ninguna",
         courtOrderNumber: c.courtOrderNumber || "",
         caseNarrative: c.caseNarrative || "",
@@ -11219,6 +11253,7 @@ function casos_validarDuplicidadResuelto(data) {
         recoveredProperty: c.recoveredProperty || "",
         recoveredPropertyQuantity: c.recoveredPropertyQuantity || c.datosResolucion?.cantidadBienesRecuperados || "",
         recoveredMoneyAmount: c.recoveredMoneyAmount || c.datosResolucion?.montoDineroRecuperado || "",
+        recoveredMoneyCurrency: c.recoveredMoneyCurrency || c.datosResolucion?.monedaDineroRecuperado || "",
         courtOrder: c.courtOrder || "Ninguna",
         courtOrderNumber: c.courtOrderNumber || "",
         caseNarrative: ""
