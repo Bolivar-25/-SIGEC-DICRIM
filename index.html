@@ -10165,10 +10165,14 @@ function buscarOrdenRegistradaPorNumero(numero) {
       return ["arma de fuego", "vehiculo", "motocicleta", "maquinitas"].includes(key) || key.includes("tragamoned");
     }
 
+    function recoveredPropertySkipsQuantity(value) {
+      return recoveredPropertyKey(value) === "alambre electrico";
+    }
+
     function updateRecoveredPropertyDetails() {
       const selected = el("recoveredProperty")?.value || "";
       const isMoneyProperty = recoveredPropertyIsMoney(selected);
-      const isGenericProperty = !recoveredPropertyIsNone(selected) && !isMoneyProperty && !recoveredPropertyUsesDedicatedBlock(selected);
+      const isGenericProperty = !recoveredPropertyIsNone(selected) && !isMoneyProperty && !recoveredPropertyUsesDedicatedBlock(selected) && !recoveredPropertySkipsQuantity(selected);
       const toggleWrap = (id, show) => {
         const node = el(id);
         if (node) {
@@ -10192,7 +10196,7 @@ function buscarOrdenRegistradaPorNumero(numero) {
         item.moneyAmount = el("recoveredMoneyAmount")?.value || "";
         item.moneyCurrency = el("recoveredMoneyCurrency")?.value || "";
       }
-      else if (property && !recoveredPropertyUsesDedicatedBlock(property)) item.quantity = el("recoveredPropertyQuantity")?.value || "";
+      else if (property && !recoveredPropertyUsesDedicatedBlock(property) && !recoveredPropertySkipsQuantity(property)) item.quantity = el("recoveredPropertyQuantity")?.value || "";
       return item;
     }
 
@@ -10218,6 +10222,7 @@ function buscarOrdenRegistradaPorNumero(numero) {
         return true;
       }
       if (recoveredPropertyUsesDedicatedBlock(item.property)) return true;
+      if (recoveredPropertySkipsQuantity(item.property)) return true;
       if (!(Number(item.quantity) > 0)) {
         if (!silent) alert("Debe indicar la cantidad de propiedad recuperada.");
         return false;
@@ -10229,6 +10234,7 @@ function buscarOrdenRegistradaPorNumero(numero) {
       if (!item.property || recoveredPropertyIsNone(item.property)) return "";
       if (recoveredPropertyIsMoney(item.property)) return `${item.property}: ${item.moneyAmount || 0}${item.moneyCurrency ? ` ${item.moneyCurrency}` : ""}`;
       if (recoveredPropertyUsesDedicatedBlock(item.property)) return `${item.property}: se registra en su bloque dedicado`;
+      if (recoveredPropertySkipsQuantity(item.property)) return item.property;
       return `${item.property}: ${item.quantity || 0}`;
     }
 
@@ -10290,7 +10296,7 @@ function buscarOrdenRegistradaPorNumero(numero) {
           moneyCurrency: data.recoveredMoneyCurrency
         });
       }
-      if (!recoveredPropertyUsesDedicatedBlock(data.recoveredProperty) && !(Number(data.recoveredPropertyQuantity) > 0)) {
+      if (!recoveredPropertyUsesDedicatedBlock(data.recoveredProperty) && !recoveredPropertySkipsQuantity(data.recoveredProperty) && !(Number(data.recoveredPropertyQuantity) > 0)) {
         alert("Debe indicar la cantidad de propiedad recuperada.");
         return false;
       }
