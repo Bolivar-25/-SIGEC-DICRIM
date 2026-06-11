@@ -3492,7 +3492,6 @@
                   <select id="laborOrderType"></select>
                   <input id="laborOrderNumber" placeholder="Número de orden judicial" />
                   <input id="laborOrderIssueDate" type="date" />
-                  <input id="laborOrderExecutionDate" type="date" />
                   <input id="laborOrderCourt" placeholder="Tribunal que emitió la orden" />
                   <input id="laborOrderAuthority" placeholder="Magistrado o autoridad" />
                   <select id="laborOrderResult"></select>
@@ -16788,7 +16787,7 @@ syncLaborSupabase(newLabor);
 
     function agregarOrdenJudicialLabor() {
       if (el("laborOrderType").value && !el("laborOrderNumber").value.trim()) return alert("Debe indicar el número de orden judicial.");
-      addLaborItem("orders", ["laborOrderType","laborOrderNumber","laborOrderIssueDate","laborOrderExecutionDate","laborOrderCourt","laborOrderAuthority","laborOrderResult","laborOrderObservations"], ["type","number","issueDate","executionDate","court","authority","result","observations"]);
+      addLaborItem("orders", ["laborOrderType","laborOrderNumber","laborOrderIssueDate","laborOrderCourt","laborOrderAuthority","laborOrderResult","laborOrderObservations"], ["type","number","issueDate","court","authority","result","observations"]);
     }
 
     async function agregarProfugoLabor() {
