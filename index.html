@@ -3783,11 +3783,11 @@
               <input id="importOperativesFile" class="hidden" type="file" accept=".json,.csv,.xls,.xlsx,application/json,text/csv" />
             </div>
             <br />
-            <h3>Campos para exportación personalizada</h3>
-            <div id="operativeExportFields" class="checkbox-grid supervisor-export"></div>
+            <h3 class="admin-general-only">Campos para exportación personalizada</h3>
+            <div id="operativeExportFields" class="checkbox-grid supervisor-export admin-general-only"></div>
           </div>
 
-          <div class="panel">
+          <div class="panel admin-general-only">
             <h3>Operativos registrados</h3>
             <div id="operativesTopScroll" class="top-scroll" aria-label="Desplazamiento horizontal de operativos registrados"><div id="operativesTopScrollInner"></div></div>
             <div id="operativesTableWrap" class="table-wrap">
@@ -3932,11 +3932,11 @@
               <input id="narcoticosImportFile" class="hidden" type="file" accept=".json,.csv,.xls,.xlsx,application/json,text/csv" />
             </div>
             <br />
-            <h3>Campos para exportación personalizada</h3>
-            <div id="narcoticosExportFields" class="checkbox-grid supervisor-export"></div>
+            <h3 class="admin-general-only">Campos para exportación personalizada</h3>
+            <div id="narcoticosExportFields" class="checkbox-grid supervisor-export admin-general-only"></div>
           </div>
 
-          <div class="panel">
+          <div class="panel admin-general-only">
             <h3>Ocupaciones narcóticas registradas</h3>
             <div id="narcoticosTopScroll" class="top-scroll" aria-label="Desplazamiento horizontal de ocupaciones narcóticas registradas"><div id="narcoticosTopScrollInner"></div></div>
             <div id="narcoticosTableWrap" class="table-wrap">
@@ -4749,13 +4749,13 @@
             <br />
             <h3>Contenido del documento</h3>
             <div class="grid four">
-              <label class="check-row"><input id="wordIncludeTables" type="checkbox" checked /> Tablas</label>
+              <label class="check-row admin-general-only"><input id="wordIncludeTables" type="checkbox" checked /> Tablas</label>
               <label class="check-row"><input id="wordIncludeTotals" type="checkbox" checked /> Totales</label>
               <label class="check-row"><input id="wordIncludeCharts" type="checkbox" /> Gráficos</label>
               <label class="check-row"><input id="wordIncludeMaps" type="checkbox" /> Mapas</label>
               <label class="check-row"><input id="wordIncludeNarratives" type="checkbox" checked /> Textos narrativos</label>
               <label class="check-row"><input id="wordIncludeIntro" type="checkbox" checked /> Introducción automática</label>
-              <label class="check-row"><input id="wordIncludeSummary" type="checkbox" checked /> Resumen ejecutivo automático</label>
+              <label class="check-row admin-general-only"><input id="wordIncludeSummary" type="checkbox" checked /> Resumen ejecutivo automático</label>
               <label class="check-row"><input id="wordIncludeConclusion" type="checkbox" checked /> Conclusión automática</label>
               <label class="check-row admin-general-only"><input id="wordGroupByDivision" type="checkbox" /> Clasificar por división</label>
             </div>
@@ -18328,13 +18328,13 @@ logAction("Operativo creado", operative.operativeCode);
       }
 
       const allowedContent = {
-        wordIncludeTables: true,
+        wordIncludeTables: false,
         wordIncludeTotals: true,
         wordIncludeCharts: false,
         wordIncludeMaps: false,
         wordIncludeNarratives: true,
         wordIncludeIntro: false,
-        wordIncludeSummary: true,
+        wordIncludeSummary: false,
         wordIncludeConclusion: false,
         wordGroupByDivision: false
       };
@@ -18373,13 +18373,13 @@ logAction("Operativo creado", operative.operativeCode);
     function word_getOptions() {
       if (!isAdminGeneral()) {
         return {
-          tables: el("wordIncludeTables")?.checked !== false,
+          tables: false,
           totals: el("wordIncludeTotals")?.checked !== false,
           charts: false,
         maps: false,
         narratives: el("wordIncludeNarratives")?.checked !== false,
         intro: false,
-        summary: el("wordIncludeSummary")?.checked !== false,
+        summary: false,
         conclusion: false,
         groupByDivision: false
       };
