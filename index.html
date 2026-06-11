@@ -3127,7 +3127,6 @@
                     <select id="resolvedOrderType" class="resolved-field"></select>
                     <input id="resolvedOrderNumber" class="resolved-field" placeholder="Número de orden judicial" />
                     <input id="resolvedOrderIssueDate" class="resolved-field" type="date" />
-                    <input id="resolvedOrderExecutionDate" class="resolved-field" type="date" />
                     <input id="resolvedOrderCourt" class="resolved-field" placeholder="Tribunal que emitió la orden" />
                     <input id="resolvedOrderAuthority" class="resolved-field" placeholder="Magistrado o autoridad" />
                     <select id="resolvedOrderResult" class="resolved-field"></select>
@@ -9772,7 +9771,7 @@ function buscarArmaRegistradaPorNumero(numero) {
         <div class="mini-item">
           <div>
             <strong>${escapeHtml(order.type || "Orden sin tipo")}</strong>
-            <small>${escapeHtml([order.number ? `No. ${order.number}` : "", order.issueDate ? `Emisión: ${humanDate(order.issueDate)}` : "", order.executionDate ? `Ejecución: ${humanDate(order.executionDate)}` : "", order.result].filter(Boolean).join(" · "))}</small>
+            <small>${escapeHtml([order.number ? `No. ${order.number}` : "", order.issueDate ? `Emisión: ${humanDate(order.issueDate)}` : "", order.result].filter(Boolean).join(" · "))}</small>
             <small>${escapeHtml([order.court, order.authority].filter(Boolean).join(" · "))}</small>
             ${order.observations ? `<small>${escapeHtml(order.observations)}</small>` : ""}
           </div>
@@ -9781,7 +9780,7 @@ function buscarArmaRegistradaPorNumero(numero) {
     }
 
     function limpiarCamposOrdenCasoResuelto() {
-      ["resolvedOrderType","resolvedOrderNumber","resolvedOrderIssueDate","resolvedOrderExecutionDate","resolvedOrderCourt","resolvedOrderAuthority","resolvedOrderResult","resolvedOrderObservations"].forEach(id => { if (el(id)) el(id).value = ""; });
+      ["resolvedOrderType","resolvedOrderNumber","resolvedOrderIssueDate","resolvedOrderCourt","resolvedOrderAuthority","resolvedOrderResult","resolvedOrderObservations"].forEach(id => { if (el(id)) el(id).value = ""; });
     }
 
     function normalizarNumeroOrden(valor) {
@@ -9830,14 +9829,13 @@ function buscarOrdenRegistradaPorNumero(numero) {
     type: el("resolvedOrderType")?.value || "",
     number: el("resolvedOrderNumber")?.value.trim() || "",
     issueDate: el("resolvedOrderIssueDate")?.value || "",
-    executionDate: el("resolvedOrderExecutionDate")?.value || "",
     court: el("resolvedOrderCourt")?.value.trim() || "",
     authority: el("resolvedOrderAuthority")?.value.trim() || "",
     result: el("resolvedOrderResult")?.value || "",
     observations: el("resolvedOrderObservations")?.value.trim() || ""
   };
 
-  if (!order.type && !order.number && !order.issueDate && !order.executionDate && !order.court && !order.authority && !order.result && !order.observations) {
+  if (!order.type && !order.number && !order.issueDate && !order.court && !order.authority && !order.result && !order.observations) {
     alert("Debe completar al menos un dato de la orden judicial.");
     return;
   }
