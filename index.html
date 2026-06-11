@@ -10144,6 +10144,11 @@ function buscarOrdenRegistradaPorNumero(numero) {
       return recoveredPropertyKey(value) === "dinero en efectivo";
     }
 
+    function recoveredPropertyIsNone(value) {
+      const key = recoveredPropertyKey(value);
+      return !key || key === "ninguna" || key === "ninguno";
+    }
+
     function recoveredPropertyUsesDedicatedBlock(value) {
       const key = recoveredPropertyKey(value);
       return ["arma de fuego", "vehiculo", "motocicleta", "maquinitas"].includes(key) || key.includes("tragamoned");
@@ -10151,7 +10156,7 @@ function buscarOrdenRegistradaPorNumero(numero) {
 
     function updateRecoveredPropertyDetails() {
       const selected = el("recoveredProperty")?.value || "";
-      const isGenericProperty = Boolean(selected) && !recoveredPropertyIsMoney(selected) && !recoveredPropertyUsesDedicatedBlock(selected);
+      const isGenericProperty = !recoveredPropertyIsNone(selected) && !recoveredPropertyIsMoney(selected) && !recoveredPropertyUsesDedicatedBlock(selected);
       const toggleWrap = (id, show) => {
         const node = el(id);
         if (node) {
@@ -10166,7 +10171,8 @@ function buscarOrdenRegistradaPorNumero(numero) {
     }
 
     function recoveredPropertyFromFields() {
-      const property = el("recoveredProperty")?.value || "";
+      const selected = el("recoveredProperty")?.value || "";
+      const property = recoveredPropertyIsNone(selected) ? "" : selected;
       const item = { property, quantity: "", moneyAmount: "" };
       if (recoveredPropertyIsMoney(property)) item.moneyAmount = el("recoveredMoneyAmount")?.value || "";
       else if (property && !recoveredPropertyUsesDedicatedBlock(property)) item.quantity = el("recoveredPropertyQuantity")?.value || "";
@@ -10174,6 +10180,7 @@ function buscarOrdenRegistradaPorNumero(numero) {
     }
 
     function recoveredPropertyHasData(item = {}) {
+      if (recoveredPropertyIsNone(item.property)) return false;
       return Object.values(item).some(value => String(value || "").trim());
     }
 
@@ -10192,7 +10199,7 @@ function buscarOrdenRegistradaPorNumero(numero) {
     }
 
     function recoveredPropertySummary(item = {}) {
-      if (!item.property) return "";
+      if (!item.property || recoveredPropertyIsNone(item.property)) return "";
       if (recoveredPropertyIsMoney(item.property)) return `${item.property}: ${item.moneyAmount || 0}`;
       if (recoveredPropertyUsesDedicatedBlock(item.property)) return `${item.property}: se registra en su bloque dedicado`;
       return `${item.property}: ${item.quantity || 0}`;
